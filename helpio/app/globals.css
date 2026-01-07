@@ -1,26 +1,59 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Based on Wishly Reference */
+    --background: 260 100% 98%;    /* Very light purple tint */
+    --foreground: 260 40% 10%;     /* Dark purple text */
+
+    /* The "Wishly" Electric Indigo */
+    --primary: 255 85% 60%;        /* Vibrant Purple/Blue */
+    --primary-foreground: 0 0% 100%;
+
+    /* The "Wishly" Soft Pink Accent */
+    --secondary: 320 90% 85%;      /* Soft Pink */
+    --secondary-foreground: 260 50% 20%;
+
+    /* Accent for "Get Spoiled" type highlights */
+    --accent: 265 90% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 260 40% 10%;
+    
+    --border: 260 20% 90%;
+    --input: 260 20% 90%;
+    --ring: 255 85% 60%;
+    
+    --radius: 1.5rem; /* Super rounded corners like the app screenshots */
+  }
+
+  .dark {
+    --background: 260 50% 10%;     /* Deep Deep Purple */
+    --foreground: 260 20% 90%;
+
+    --primary: 255 80% 65%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 320 70% 60%;
+    --secondary-foreground: 0 0% 100%;
+
+    --card: 260 40% 14%;
+    --card-foreground: 260 20% 90%;
+    
+    --border: 260 40% 20%;
+    --input: 260 40% 20%;
+    --ring: 255 80% 65%;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .font-heading {
+    font-family: var(--font-heading);
+  }
+  .font-body {
+    font-family: var(--font-body);
+  }
 }
