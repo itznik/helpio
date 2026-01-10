@@ -21,70 +21,83 @@ export default function Home() {
   }, []);
 
   const { scrollY } = useScroll();
-  
-  // FIXED: Reduced parallax speed so text stays anchored comfortably
-  const y = useTransform(scrollY, [0, 1000], [0, 200]);
-  
-  // FIXED: Removed the 'opacity' transform entirely so text doesn't vanish
+  const y = useTransform(scrollY, [0, 500], [0, 200]);
 
   return (
-    <main className="min-h-screen relative flex flex-col overflow-hidden bg-slate-50 dark:bg-[#0B1120] transition-colors duration-500">
+    <main className="min-h-screen relative flex flex-col overflow-hidden bg-slate-50 dark:bg-[#020617] transition-colors duration-500">
       
       {/* =========================================
-          BACKGROUND LAYERS (Parallax Active)
+          BACKGROUND GRAPHICS (Fixed for Dark Mode)
       ========================================= */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         
         {/* 1. Base Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-slate-100 dark:from-[#0B1120] dark:via-slate-900 dark:to-[#0B1120] opacity-90" />
-        <div className="absolute inset-0 bg-grid opacity-[0.08] dark:opacity-[0.05]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-slate-100 dark:from-[#020617] dark:via-[#0f172a] dark:to-[#020617] opacity-90" />
+        
+        {/* 2. Grid - Increased opacity for Dark Mode visibility */}
+        <div className="absolute inset-0 bg-grid opacity-[0.08] dark:opacity-[0.2]" />
 
-        {/* 2. Floating Orbs (They stay fixed but move slightly with animation) */}
+        {/* 3. Gradient Orbs - FIXED BLENDING MODE */}
+        {/* CRITICAL FIX: 
+            - Light Mode: mix-blend-multiply (Subtractive, looks like watercolor)
+            - Dark Mode: mix-blend-screen (Additive, looks like glowing light)
+        */}
+        
+        {/* Orb 1: Teal/Blue (Top Left) */}
         <motion.div
            animate={{ 
              x: [0, 50, 0],
              y: [0, -30, 0],
-             scale: [1, 1.05, 1] 
+             scale: [1, 1.1, 1] 
            }}
            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-           className="absolute -top-[10%] -left-[10%] w-[60vw] h-[60vw] bg-gradient-to-br from-teal-300/30 to-blue-500/30 dark:from-teal-600/10 dark:to-indigo-600/10 blur-[120px] rounded-full mix-blend-multiply dark:mix-blend-soft-light"
+           className="absolute -top-[10%] -left-[10%] w-[60vw] h-[60vw] 
+                      bg-gradient-to-br from-teal-300/40 to-blue-500/40 
+                      dark:from-teal-600/30 dark:to-blue-600/30 
+                      blur-[100px] rounded-full 
+                      mix-blend-multiply dark:mix-blend-screen"
         />
         
+        {/* Orb 2: Purple/Indigo (Bottom Right) */}
         <motion.div
            animate={{ 
              x: [0, -50, 0],
              y: [0, 40, 0],
-             scale: [1, 1.1, 1] 
+             scale: [1, 1.2, 1] 
            }}
            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-           className="absolute -bottom-[10%] -right-[10%] w-[60vw] h-[60vw] bg-gradient-to-tl from-indigo-300/30 to-purple-500/30 dark:from-indigo-700/10 dark:to-purple-800/10 blur-[120px] rounded-full mix-blend-multiply dark:mix-blend-soft-light"
+           className="absolute -bottom-[10%] -right-[10%] w-[60vw] h-[60vw] 
+                      bg-gradient-to-tl from-indigo-300/40 to-purple-500/40 
+                      dark:from-indigo-600/30 dark:to-purple-600/30 
+                      blur-[100px] rounded-full 
+                      mix-blend-multiply dark:mix-blend-screen"
         />
 
-        {/* 3. Wireframe Structure (Subtle Rotation) */}
+        {/* 4. Wireframe SVG - Increased Opacity for Dark Mode */}
         <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 150, repeat: Infinity, ease: "linear" }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100vw] h-[100vw] opacity-20 dark:opacity-10"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120vw] h-[120vw] opacity-30 dark:opacity-40"
         >
            <svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
              <defs>
                 <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" className="stop-teal-500" stopOpacity="0.3"/>
-                  <stop offset="100%" className="stop-purple-500" stopOpacity="0.3"/>
+                  <stop offset="0%" className="stop-teal-500" stopOpacity="0.4"/>
+                  <stop offset="100%" className="stop-purple-500" stopOpacity="0.4"/>
                 </linearGradient>
              </defs>
-             <circle cx="500" cy="500" r="400" fill="none" stroke="url(#grad1)" strokeWidth="1" strokeDasharray="20 20" />
-             <path d="M500,100 L900,500 L500,900 L100,500 Z" fill="none" stroke="url(#grad1)" strokeWidth="1" />
+             <circle cx="500" cy="500" r="350" fill="none" stroke="url(#grad1)" strokeWidth="1" strokeDasharray="20 20" />
+             <path d="M500,150 L850,500 L500,850 L150,500 Z" fill="none" stroke="url(#grad1)" strokeWidth="1" />
            </svg>
         </motion.div>
       </div>
 
 
       {/* =========================================
-          HERO CONTENT (Solid, No Fade Out)
+          HERO CONTENT
       ========================================= */}
       <motion.section 
-        style={{ y }} // Keeps the parallax move (vertical scroll) but NO opacity fade
+        style={{ y }} 
         className="relative z-10 pt-40 pb-32 px-4 md:px-6 min-h-[90vh] flex flex-col items-center justify-center text-center"
       >
         <div className="max-w-5xl mx-auto w-full">
