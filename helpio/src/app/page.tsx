@@ -32,7 +32,7 @@ export default function Home() {
             <span>The Future of Philanthropy is Here</span>
           </div>
 
-          {/* Headline - FORCED SLATE-900 (Black) */}
+          {/* Headline - Explicitly Black/Slate-900 in Light Mode */}
           <h1 className="text-5xl md:text-8xl font-display font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-8">
             Turn wealth into <br />
             <span className="text-gradient">tangible impact.</span>
