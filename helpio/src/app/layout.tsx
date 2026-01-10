@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${outfit.variable} antialiased transition-colors duration-300`}>
-        {/* IMPORTANT: attribute="class" is REQUIRED for Tailwind dark mode */}
+        {/* CRITICAL: attribute="class" MUST be here for Tailwind to work */}
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <div className="flex flex-col min-h-screen">
             <Navbar />
