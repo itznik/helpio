@@ -1,44 +1,37 @@
 @import "tailwindcss";
 
-/* --- 1. BASE STYLES --- */
-/* We rely strictly on Tailwind's 'dark:' classes, not custom variables */
-:root {
-  --background: #ffffff;
-  --foreground: #020617;
-}
-
-.dark {
-  --background: #020617;
-  --foreground: #f8fafc;
-}
-
+/* Default: Light Mode (White BG, Black Text) */
 body {
-  @apply bg-white text-slate-900 dark:bg-slate-950 dark:text-white;
+  @apply bg-white text-slate-900; 
   font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* --- 2. GRID VISIBILITY --- */
+/* Dark Mode Override: (Black BG, White Text) */
+.dark body {
+  @apply bg-slate-950 text-white;
+}
+
+/* --- GRID BACKGROUND --- */
+/* Light Mode Grid (Dark Lines) */
 .bg-grid {
   background-size: 40px 40px;
-  /* Darker gray (#cbd5e1) so it is visible on white background */
   background-image: linear-gradient(to right, #cbd5e1 1px, transparent 1px),
                     linear-gradient(to bottom, #cbd5e1 1px, transparent 1px);
   mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
   -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
   z-index: -1;
-  opacity: 0.3; /* Visibility Fix */
+  opacity: 0.3;
 }
 
+/* Dark Mode Grid (Light Lines) */
 .dark .bg-grid {
-  /* Lighter gray for dark mode */
   background-image: linear-gradient(to right, #1e293b 1px, transparent 1px),
                     linear-gradient(to bottom, #1e293b 1px, transparent 1px);
   opacity: 0.3;
 }
 
-/* --- 3. GLASS PANEL --- */
+/* --- CARD --- */
 .glass-panel {
   @apply bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-md;
 }
