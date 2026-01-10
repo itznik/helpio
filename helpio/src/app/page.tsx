@@ -14,7 +14,7 @@ export default function Home() {
     <main className="min-h-screen relative flex flex-col">
       
       {/* Background Grid */}
-      <div className="fixed inset-0 z-0 pointer-events-none bg-grid opacity-100" />
+      <div className="fixed inset-0 z-0 pointer-events-none bg-grid" />
       <div className="fixed top-[-10%] left-1/2 -translate-x-1/2 w-[600px] h-[500px] bg-teal-400/20 blur-[120px] rounded-full -z-10" />
 
       {/* Hero Section */}
@@ -31,7 +31,7 @@ export default function Home() {
             <span>The Future of Philanthropy is Here</span>
           </div>
 
-          {/* Headline - FORCED BLACK IN LIGHT MODE */}
+          {/* Headline - FORCED BLACK TEXT IN LIGHT MODE */}
           <h1 className="text-5xl md:text-8xl font-display font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-8">
             Turn wealth into <br />
             <span className="text-gradient">tangible impact.</span>
@@ -46,7 +46,6 @@ export default function Home() {
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             
-            {/* BUTTON FIX: Black Background in Light Mode */}
             <button 
               onClick={() => setIsModalOpen(true)}
               className="px-8 py-4 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold text-lg hover:scale-105 transition-all shadow-xl"
