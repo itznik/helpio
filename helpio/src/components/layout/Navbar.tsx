@@ -11,7 +11,7 @@ export default function Navbar() {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8 }}
-      className="fixed top-0 inset-x-0 z-50 mx-auto max-w-5xl mt-4 px-6 py-3 rounded-full border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm flex justify-between items-center"
+      className="fixed top-0 inset-x-0 z-50 mx-auto max-w-5xl mt-4 px-6 py-3 rounded-full border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm flex justify-between items-center transition-colors"
     >
       {/* Logo Area */}
       <Link href="/" className="flex items-center gap-2 group">
@@ -30,7 +30,7 @@ export default function Navbar() {
         <Link href="#" className="hover:text-slate-900 dark:hover:text-white transition-colors">Stories</Link>
       </div>
 
-      {/* CTA Button */}
+      {/* CTA Button & Toggle */}
       <div className="flex items-center gap-4">
         <div className="hidden md:block">
            <ThemeToggle />
@@ -41,7 +41,7 @@ export default function Navbar() {
           Start Granting
         </button>
 
-        {/* Mobile Menu Icon */}
+        {/* Mobile Menu Icon - Black in Light Mode */}
         <button className="md:hidden text-slate-900 dark:text-white">
           <Menu className="w-6 h-6" />
         </button>
