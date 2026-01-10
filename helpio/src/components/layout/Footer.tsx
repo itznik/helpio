@@ -5,12 +5,12 @@ import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 pt-16 pb-8 transition-colors relative z-10 mt-auto">
+    <footer className="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 pt-16 pb-8 transition-colors relative z-10 mt-auto">
       <div className="container mx-auto px-6">
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           
-          {/* Brand Column */}
+          {/* Brand */}
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-6 group">
               <div className="bg-teal-50 dark:bg-teal-500/10 p-2 rounded-lg border border-teal-100 dark:border-teal-500/20">
@@ -31,7 +31,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Links Columns */}
+          {/* Links */}
           <FooterColumn title="Platform">
             <FooterLink href="#">How it Works</FooterLink>
             <FooterLink href="#">Browse Wishes</FooterLink>
@@ -63,7 +63,6 @@ export default function Footer() {
             <a href="#" className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors">Sitemap</a>
           </div>
         </div>
-
       </div>
     </footer>
   );
@@ -90,7 +89,7 @@ function FooterLink({ href, children }: { href: string, children: React.ReactNod
 
 function SocialIcon({ icon }: { icon: React.ReactNode }) {
   return (
-    <a href="#" className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-teal-600 hover:border-teal-600 hover:text-white transition-all">
+    <a href="#" className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-teal-600 hover:border-teal-600 hover:text-white transition-all">
       {icon}
     </a>
   );
