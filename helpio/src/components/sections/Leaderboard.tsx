@@ -27,7 +27,7 @@ export default function Leaderboard() {
             <Crown className="w-4 h-4" />
             Top Philanthropists
           </div>
-          {/* TITLE FIX: "The" is explicit black, Hall of Fame is Gold */}
+          {/* TITLE FIX: "The" is Slate-900 */}
           <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900 dark:text-white mb-4">
             The <span className="text-gradient-gold">Hall of Fame</span>
           </h2>
