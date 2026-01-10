@@ -57,6 +57,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+  // Fetch user role from Metadata (Supabase stores roles in user_metadata or app_metadata)
+  const role = user.user_metadata?.role || 'USER';
+
+  if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {
+     // Kick them out to dashboard if they are not admin
+     return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
   // 5. Geo-Detection & Security Headers (Preserving your previous logic)
   const country = request.geo?.country || 'US';
   response.headers.set('x-user-country', country);
