@@ -32,10 +32,13 @@ export default function OurImpact() {
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1 }}
-              className="p-4 md:p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex flex-col justify-center items-center"
+              className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex flex-col justify-center items-center h-full"
             >
-              {/* FIX: Responsive font size + break-words to stop overflow */}
-              <div className={`text-2xl sm:text-3xl md:text-5xl font-bold mb-2 break-words w-full ${stat.color}`}>
+              {/* FIX: 
+                  - Mobile: break-words (Wraps if screen is tiny)
+                  - Desktop: whitespace-nowrap (Forces 1 line, prevents height stretching) 
+              */}
+              <div className={`text-2xl sm:text-3xl md:text-5xl font-bold mb-2 break-words md:whitespace-nowrap w-full md:w-auto ${stat.color}`}>
                 {stat.value}
               </div>
               <div className="text-xs md:text-sm font-bold text-slate-500 uppercase tracking-wider">
@@ -59,6 +62,7 @@ export default function OurImpact() {
             </button>
           </div>
           
+          {/* Background decoration */}
           <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
             <div className="absolute top-[-50%] left-[-20%] w-[500px] h-[500px] bg-teal-500 rounded-full blur-[100px]" />
             <div className="absolute bottom-[-50%] right-[-20%] w-[500px] h-[500px] bg-indigo-500 rounded-full blur-[100px]" />
