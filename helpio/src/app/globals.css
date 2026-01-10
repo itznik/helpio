@@ -28,7 +28,7 @@ body {
   mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
   -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
   z-index: -1;
-  opacity: 0.5; /* Visibility Fix */
+  opacity: 0.3; /* Visibility Fix */
 }
 
 .dark .bg-grid {
