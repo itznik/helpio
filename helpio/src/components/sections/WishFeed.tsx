@@ -3,7 +3,6 @@
 import WishCard from '../ui/WishCard';
 import { motion } from 'framer-motion';
 
-// Mock Data
 const WISHES = [
   { id: 1, name: "Aarav P.", avatar: "https://i.pravatar.cc/150?u=a", wish: "Laptop for Coding Bootcamp", story: "I have been learning Python on my phone for 6 months. I need a laptop to compile code efficiently.", amount: 450, category: "Education", verified: true },
   { id: 2, name: "Sarah M.", avatar: "https://i.pravatar.cc/150?u=s", wish: "Wheelchair Repair Kit", story: "My wheelchair's left wheel is damaged. I just need the parts to fix it myself.", amount: 120, category: "Health", verified: true },
@@ -16,8 +15,8 @@ export default function WishFeed() {
       
       <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
         <div>
-          {/* TITLE FIX: Explicitly Slate-900 (Black) in Light Mode */}
-          <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-900 dark:text-white mb-2">
+          {/* HEADER FIX: Forced Black */}
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-black dark:text-white mb-2">
             Latest Requests
           </h2>
           <p className="text-slate-600 dark:text-slate-400 font-medium">Real people. Real needs. Verified impact.</p>
