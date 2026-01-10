@@ -1,4 +1,4 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
@@ -6,20 +6,37 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export async function GET(request: Request) {
-  const requestUrl = new URL(request.url);
-  const code = requestUrl.searchParams.get('code');
-
+  const { searchParams, origin } = new URL(request.url);
+  const code = searchParams.get('code');
+  
   if (code) {
-    const supabase = createRouteHandlerClient({ cookies });
+    const cookieStore = cookies();
     
-    // 1. Exchange Code for Session
-    const { data: { session } } = await supabase.auth.exchangeCodeForSession(code);
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value;
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            cookieStore.set({ name, value, ...options });
+          },
+          remove(name: string, options: CookieOptions) {
+            cookieStore.delete({ name, ...options });
+          },
+        },
+      }
+    );
+    
+    // Exchange the code for a session
+    const { data: { session }, error } = await supabase.auth.exchangeCodeForSession(code);
 
-    if (session?.user) {
-      // 2. SYNC USER TO PRISMA DB
-      // We check if user exists. If not, create them.
+    if (!error && session?.user) {
+      // SYNC USER TO PRISMA DB
       const existingUser = await prisma.user.findUnique({
-        where: { id: session.user.id } // Supabase ID matches Prisma ID
+        where: { id: session.user.id }
       });
 
       if (!existingUser) {
@@ -29,13 +46,12 @@ export async function GET(request: Request) {
             email: session.user.email!,
             fullName: session.user.user_metadata.full_name || 'New User',
             avatarUrl: session.user.user_metadata.avatar_url,
-            // Country/Currency will be detected by middleware later
           }
         });
       }
     }
   }
 
-  // 3. Redirect to Dashboard
-  return NextResponse.redirect(new URL('/dashboard', request.url));
+  // Redirect to Dashboard
+  return NextResponse.redirect(`${origin}/dashboard`);
 }
