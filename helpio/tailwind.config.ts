@@ -1,7 +1,10 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  darkMode: "class", // <--- THIS IS THE FIX. WITHOUT THIS, LIGHT MODE WILL FAIL.
+  // 1. THIS IS THE CRITICAL FIX.
+  // It forces Tailwind to wait for the "dark" class instead of checking your OS.
+  darkMode: "class", 
+  
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,11 +12,6 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      colors: {
-        // We are defining explicit colors to avoid any variable confusion
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-      },
       fontFamily: {
         sans: ["var(--font-inter)"],
         display: ["var(--font-outfit)"],
