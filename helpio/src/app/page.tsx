@@ -27,22 +27,17 @@ export default function Home() {
     <main className="min-h-screen relative flex flex-col overflow-hidden bg-slate-50 dark:bg-[#020617] transition-colors duration-500">
       
       {/* =========================================
-          BACKGROUND GRAPHICS (Fixed for Dark Mode)
+          BACKGROUND GRAPHICS (High Visibility Mode)
       ========================================= */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         
         {/* 1. Base Gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-slate-100 dark:from-[#020617] dark:via-[#0f172a] dark:to-[#020617] opacity-90" />
         
-        {/* 2. Grid - Increased opacity for Dark Mode visibility */}
-        <div className="absolute inset-0 bg-grid opacity-[0.08] dark:opacity-[0.2]" />
+        {/* 2. Grid Texture */}
+        <div className="absolute inset-0 bg-grid opacity-[0.1] dark:opacity-[0.15]" />
 
-        {/* 3. Gradient Orbs - FIXED BLENDING MODE */}
-        {/* CRITICAL FIX: 
-            - Light Mode: mix-blend-multiply (Subtractive, looks like watercolor)
-            - Dark Mode: mix-blend-screen (Additive, looks like glowing light)
-        */}
-        
+        {/* 3. Gradient Orbs (Visible in both modes) */}
         {/* Orb 1: Teal/Blue (Top Left) */}
         <motion.div
            animate={{ 
@@ -53,9 +48,10 @@ export default function Home() {
            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
            className="absolute -top-[10%] -left-[10%] w-[60vw] h-[60vw] 
                       bg-gradient-to-br from-teal-300/40 to-blue-500/40 
-                      dark:from-teal-600/30 dark:to-blue-600/30 
+                      dark:from-teal-500/20 dark:to-blue-500/20 
                       blur-[100px] rounded-full 
-                      mix-blend-multiply dark:mix-blend-screen"
+                      mix-blend-multiply dark:mix-blend-screen" 
+                      // dark:mix-blend-screen makes it glow on black
         />
         
         {/* Orb 2: Purple/Indigo (Bottom Right) */}
@@ -68,26 +64,32 @@ export default function Home() {
            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 1 }}
            className="absolute -bottom-[10%] -right-[10%] w-[60vw] h-[60vw] 
                       bg-gradient-to-tl from-indigo-300/40 to-purple-500/40 
-                      dark:from-indigo-600/30 dark:to-purple-600/30 
+                      dark:from-indigo-500/20 dark:to-purple-500/20 
                       blur-[100px] rounded-full 
                       mix-blend-multiply dark:mix-blend-screen"
         />
 
-        {/* 4. Wireframe SVG - Increased Opacity for Dark Mode */}
+        {/* 4. Wireframe SVG - Fixed Opacity to 0.35 */}
         <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 150, repeat: Infinity, ease: "linear" }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120vw] h-[120vw] opacity-30 dark:opacity-40"
+            // Explicitly set opacity to 0.35 for both modes as requested
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120vw] h-[120vw] opacity-35 dark:opacity-35"
         >
            <svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
              <defs>
                 <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" className="stop-teal-500" stopOpacity="0.4"/>
-                  <stop offset="100%" className="stop-purple-500" stopOpacity="0.4"/>
+                  {/* Colors adjusted to be visible on White AND Black */}
+                  <stop offset="0%" className="stop-teal-600 dark:stop-teal-400" stopOpacity="0.8"/>
+                  <stop offset="100%" className="stop-purple-600 dark:stop-purple-400" stopOpacity="0.8"/>
                 </linearGradient>
              </defs>
-             <circle cx="500" cy="500" r="350" fill="none" stroke="url(#grad1)" strokeWidth="1" strokeDasharray="20 20" />
-             <path d="M500,150 L850,500 L500,850 L150,500 Z" fill="none" stroke="url(#grad1)" strokeWidth="1" />
+             {/* Main Circle */}
+             <circle cx="500" cy="500" r="350" fill="none" stroke="url(#grad1)" strokeWidth="1.5" strokeDasharray="20 20" />
+             {/* Triangle/Geometric Shape */}
+             <path d="M500,150 L850,500 L500,850 L150,500 Z" fill="none" stroke="url(#grad1)" strokeWidth="1.5" />
+             {/* Inner Orbit */}
+             <circle cx="500" cy="500" r="150" fill="none" stroke="url(#grad1)" strokeWidth="1" opacity="0.5" />
            </svg>
         </motion.div>
       </div>
