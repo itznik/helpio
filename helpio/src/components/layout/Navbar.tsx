@@ -9,11 +9,11 @@ import ThemeToggle from '../shared/ThemeToggle';
 export default function Navbar() {
   return (
     <motion.nav 
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.8 }}
-      className="fixed top-0 w-full z-50 glass-panel border-b-0 rounded-b-2xl mx-auto max-w-7xl inset-x-0 mt-4 px-6 py-4 flex justify-between items-center"
-    >
+  initial={{ y: -100, opacity: 0 }}
+  animate={{ y: 0, opacity: 1 }}
+  transition={{ duration: 0.8 }}
+  className="fixed top-0 inset-x-0 z-50 mx-auto max-w-5xl mt-4 px-6 py-3 rounded-full border border-slate-200/50 dark:border-white/10 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md shadow-sm flex justify-between items-center"
+>
       {/* Logo Area */}
       <Link href="/" className="flex items-center gap-2 group">
         <div className="bg-teal-500/20 p-2 rounded-lg group-hover:bg-teal-500/40 transition-colors">
