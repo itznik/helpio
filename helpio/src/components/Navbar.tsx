@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion'; // For smooth entrance
 import { Menu, Sparkles } from 'lucide-react'; // Icons
+import ThemeToggle from '../shared/ThemeToggle';
+
 
 export default function Navbar() {
   return (
@@ -31,9 +33,16 @@ export default function Navbar() {
 
       {/* CTA Button */}
       <div className="flex items-center gap-4">
+        
+        {/* ADD THIS LINE */}
+        <div className="hidden md:block">
+           <ThemeToggle />
+        </div>
+
         <button className="hidden md:block px-5 py-2.5 rounded-full bg-gradient-to-r from-teal-500 to-emerald-600 text-white font-semibold text-sm shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 transition-all transform hover:scale-105">
           Start Granting
         </button>
+        
         {/* Mobile Menu Icon */}
         <button className="md:hidden text-gray-300">
           <Menu className="w-6 h-6" />
