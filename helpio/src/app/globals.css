@@ -1,23 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  /* Light Mode - High Contrast */
+  /* --- LIGHT MODE VARIABLES --- */
   --background: #ffffff;
-  --foreground: #0f172a; /* Slate 900 */
+  --foreground: #020617; /* Deep Black */
   
-  --card-bg: rgba(255, 255, 255, 0.95); /* More solid for speed */
-  --card-border: #e2e8f0; /* Slate 200 - Visible border */
+  --card-bg: #ffffff;
+  --card-border: #cbd5e1; /* Slate 300 (Darker border for visibility) */
   
   --primary: #0f172a;
   --primary-fg: #ffffff;
 }
 
 .dark {
-  /* Dark Mode - Deep Void */
+  /* --- DARK MODE VARIABLES --- */
   --background: #020617;
   --foreground: #f8fafc;
   
-  --card-bg: rgba(15, 23, 42, 0.8);
+  --card-bg: rgba(15, 23, 42, 0.6);
   --card-border: rgba(255, 255, 255, 0.1);
   
   --primary: #ffffff;
@@ -31,44 +31,48 @@ body {
   overflow-x: hidden;
 }
 
-/* --- ZERO-LAG GRID (SVG) --- */
-/* This is 100x faster than CSS Gradients */
+/* --- VISIBLE GRID --- */
+/* Light Mode Grid: Darker stroke (Slate-300) so it is visible on white */
 .bg-grid {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='%23cbd5e1'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e");
   background-size: 32px 32px;
-  mask-image: linear-gradient(to bottom, transparent, 10% black, 90% black, transparent);
-  -webkit-mask-image: linear-gradient(to bottom, transparent, 5%, black, 95%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, 5% black, 90% black, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, 5%, black, 90%, transparent);
+  opacity: 0.6; 
 }
 
+/* Dark Mode Grid: Lighter stroke */
 .dark .bg-grid {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='%231e293b'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e");
+  opacity: 0.4;
 }
 
-/* --- HIGH PERFORMANCE GLASS --- */
+/* --- CARD STYLES --- */
 .glass-panel {
   background-color: var(--card-bg);
   border: 1px solid var(--card-border);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  backdrop-filter: blur(8px); /* Kept low for speed */
-  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); /* Soft shadow */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 @layer utilities {
+  /* Text Gradients that work on both backgrounds */
   .text-gradient {
-    background: linear-gradient(to right, #0d9488, #0891b2);
+    background: linear-gradient(to right, #0f766e, #0891b2); /* Darker Teal for Light Mode */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
   .dark .text-gradient {
-    background: linear-gradient(to right, #2dd4bf, #22d3ee);
+    background: linear-gradient(to right, #2dd4bf, #22d3ee); /* Neon Teal for Dark Mode */
   }
   
   .text-gradient-gold {
-     background: linear-gradient(to right, #d97706, #b45309);
+     background: linear-gradient(to right, #b45309, #d97706); /* Dark Gold */
      -webkit-background-clip: text;
      -webkit-text-fill-color: transparent;
   }
   .dark .text-gradient-gold {
-     background: linear-gradient(to right, #fbbf24, #d97706);
+     background: linear-gradient(to right, #fbbf24, #f59e0b); /* Bright Gold */
   }
 }
