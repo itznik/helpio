@@ -14,12 +14,11 @@ const DONORS = [
 
 export default function Leaderboard() {
   return (
-    <section className="relative overflow-hidden pb-20 pt-10">
+    <section className="relative overflow-hidden pb-20 pt-10 w-full">
       
-      {/* Background Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-[100px] -z-10" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-amber-500/10 rounded-full blur-[100px] -z-10" />
 
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 md:px-6">
         
         {/* Header */}
         <div className="text-center mb-16">
@@ -27,7 +26,6 @@ export default function Leaderboard() {
             <Crown className="w-4 h-4" />
             Top Philanthropists
           </div>
-          {/* TITLE FIX: "The" is Slate-900 */}
           <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900 dark:text-white mb-4">
             The <span className="text-gradient-gold">Hall of Fame</span>
           </h2>
@@ -37,31 +35,60 @@ export default function Leaderboard() {
         </div>
 
         {/* Podium */}
-        <div className="flex flex-col md:flex-row justify-center items-end gap-6 mb-16 px-4">
-          <PodiumCard donor={DONORS[1]} delay={0.2} height="h-64" color="border-slate-300 dark:border-slate-600 bg-white/90 dark:bg-slate-800" icon={<Medal className="w-6 h-6 text-slate-500 dark:text-slate-300" />} />
-          <PodiumCard donor={DONORS[0]} delay={0} height="h-80" color="border-amber-400 bg-amber-50/90 dark:bg-amber-900/20" icon={<Trophy className="w-8 h-8 text-amber-500" />} isFirst />
-          <PodiumCard donor={DONORS[2]} delay={0.4} height="h-56" color="border-orange-300 dark:border-orange-800 bg-orange-50/90 dark:bg-orange-900/10" icon={<Medal className="w-6 h-6 text-orange-600" />} />
+        <div className="flex flex-col md:flex-row justify-center items-end gap-6 mb-16 px-2 w-full">
+          
+          {/* 1st Place (Gold) - First in code for Mobile, Middle on Desktop (order-2) */}
+          <PodiumCard 
+            donor={DONORS[0]} 
+            delay={0} 
+            height="h-80" 
+            color="border-amber-400 bg-amber-50/90 dark:bg-amber-900/20" 
+            icon={<Trophy className="w-8 h-8 text-amber-500" />} 
+            isFirst 
+            orderClass="order-1 md:order-2" 
+          />
+
+          {/* 2nd Place (Silver) - Second in code for Mobile, Left on Desktop (order-1) */}
+          <PodiumCard 
+            donor={DONORS[1]} 
+            delay={0.2} 
+            height="h-64" 
+            color="border-slate-300 dark:border-slate-600 bg-white/90 dark:bg-slate-800" 
+            icon={<Medal className="w-6 h-6 text-slate-500 dark:text-slate-300" />} 
+            orderClass="order-2 md:order-1" 
+          />
+
+          {/* 3rd Place (Bronze) - Third in code for Mobile, Right on Desktop (order-3) */}
+          <PodiumCard 
+            donor={DONORS[2]} 
+            delay={0.4} 
+            height="h-56" 
+            color="border-orange-300 dark:border-orange-800 bg-orange-50/90 dark:bg-orange-900/10" 
+            icon={<Medal className="w-6 h-6 text-orange-600" />} 
+            orderClass="order-3 md:order-3" 
+          />
+
         </div>
 
         {/* List */}
-        <div className="max-w-3xl mx-auto space-y-3">
+        <div className="max-w-3xl mx-auto space-y-3 w-full">
           {DONORS.slice(3).map((donor, index) => (
             <motion.div
               key={donor.rank}
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5 + (index * 0.1) }}
-              className="flex items-center justify-between p-4 rounded-xl glass-panel group"
+              className="flex items-center justify-between p-4 rounded-xl glass-panel group w-full"
             >
-              <div className="flex items-center gap-4">
-                <span className="font-display font-bold text-slate-400 w-6 text-center text-lg">#{donor.rank}</span>
-                <img src={donor.avatar} alt={donor.name} className="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-700" />
-                <div>
-                  <h4 className="font-bold text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-500 transition-colors">{donor.name}</h4>
+              <div className="flex items-center gap-3 md:gap-4 overflow-hidden">
+                <span className="font-display font-bold text-slate-400 w-6 text-center text-lg flex-shrink-0">#{donor.rank}</span>
+                <img src={donor.avatar} alt={donor.name} className="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-700 flex-shrink-0" />
+                <div className="min-w-0">
+                  <h4 className="font-bold text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-500 transition-colors truncate">{donor.name}</h4>
                   <span className="text-xs text-slate-500 font-medium">{donor.badge}</span>
                 </div>
               </div>
-              <div className="text-right">
+              <div className="text-right flex-shrink-0 ml-2">
                  <div className="font-bold text-slate-900 dark:text-white">${donor.amount.toLocaleString()}</div>
                  <div className="text-xs text-slate-500">Donated</div>
               </div>
@@ -73,13 +100,14 @@ export default function Leaderboard() {
   );
 }
 
-function PodiumCard({ donor, delay, height, color, icon, isFirst = false }: any) {
+function PodiumCard({ donor, delay, height, color, icon, isFirst = false, orderClass }: any) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.6 }}
-      className={`relative flex flex-col items-center justify-end w-full md:w-44 ${height} rounded-t-3xl border-t border-x ${color} backdrop-blur-md pb-6 shadow-sm`}
+      // Applied orderClass here to handle Mobile vs Desktop position
+      className={`relative flex flex-col items-center justify-end w-full md:w-44 ${height} ${orderClass} rounded-t-3xl border-t border-x ${color} backdrop-blur-md pb-6 shadow-sm mt-8 md:mt-0`}
     >
       <div className={`absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full border-4 ${isFirst ? 'border-amber-400' : 'border-slate-200 dark:border-slate-700'} overflow-hidden bg-white dark:bg-slate-900 shadow-md`}>
         <img src={donor.avatar} alt={donor.name} className="w-full h-full object-cover" />
