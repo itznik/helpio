@@ -1,48 +1,42 @@
 @import "tailwindcss";
 
-/* --- 1. LIGHT MODE DEFAULTS (The Baseline) --- */
+/* --- 1. BASE SETTINGS --- */
 :root {
-  /* Explicit White Background / Black Text */
-  --foreground-rgb: 15, 23, 42;    /* Slate-900 */
-  --background-start-rgb: 255, 255, 255; /* Pure White */
-  --background-end-rgb: 248, 250, 252;   /* Slate-50 */
+  --background: #ffffff;
+  --foreground: #020617;
 }
 
-/* --- 2. DARK MODE OVERRIDES (Only triggers if .dark class is present) --- */
 .dark {
-  --foreground-rgb: 255, 255, 255;       /* White */
-  --background-start-rgb: 2, 6, 23;      /* Slate-950 */
-  --background-end-rgb: 15, 23, 42;      /* Slate-900 */
+  --background: #020617;
+  --foreground: #f8fafc;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(to bottom, rgb(var(--background-start-rgb)), rgb(var(--background-end-rgb)));
+  @apply bg-white text-slate-900 dark:bg-slate-950 dark:text-white;
   font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* --- GRID VISIBILITY --- */
+/* --- 2. GRID VISIBILITY (Ultra Subtle) --- */
 .bg-grid {
   background-size: 40px 40px;
-  /* Light Mode Grid: Darker Gray (#cbd5e1) to be visible on white */
-  background-image: linear-gradient(to right, #cbd5e1 1px, transparent 1px),
-                    linear-gradient(to bottom, #cbd5e1 1px, transparent 1px);
-  mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+  /* Very light gray for Light Mode */
+  background-image: linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+                    linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
+  mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
   z-index: -1;
-  opacity: 0.4;
+  opacity: 0.5;
 }
 
 .dark .bg-grid {
-  /* Dark Mode Grid: Subtle Slate */
   background-image: linear-gradient(to right, #1e293b 1px, transparent 1px),
                     linear-gradient(to bottom, #1e293b 1px, transparent 1px);
   opacity: 0.3;
 }
 
-/* --- GLASS PANEL --- */
+/* --- 3. GLASS PANEL --- */
 .glass-panel {
   @apply bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-md;
 }
