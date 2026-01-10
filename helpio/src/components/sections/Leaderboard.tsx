@@ -14,7 +14,7 @@ const DONORS = [
 
 export default function Leaderboard() {
   return (
-    <section className="relative overflow-hidden pb-20">
+    <section className="relative overflow-hidden pb-20 pt-10">
       
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-[100px] -z-10" />
@@ -37,9 +37,9 @@ export default function Leaderboard() {
 
         {/* Podium */}
         <div className="flex flex-col md:flex-row justify-center items-end gap-6 mb-16 px-4">
-          <PodiumCard donor={DONORS[1]} delay={0.2} height="h-64" color="border-slate-300 dark:border-slate-600 bg-white/80 dark:bg-slate-800" icon={<Medal className="w-6 h-6 text-slate-500 dark:text-slate-300" />} />
-          <PodiumCard donor={DONORS[0]} delay={0} height="h-80" color="border-amber-400 bg-amber-50/80 dark:bg-amber-900/20" icon={<Trophy className="w-8 h-8 text-amber-500" />} isFirst />
-          <PodiumCard donor={DONORS[2]} delay={0.4} height="h-56" color="border-orange-300 dark:border-orange-800 bg-orange-50/80 dark:bg-orange-900/10" icon={<Medal className="w-6 h-6 text-orange-600" />} />
+          <PodiumCard donor={DONORS[1]} delay={0.2} height="h-64" color="border-slate-300 dark:border-slate-600 bg-white/90 dark:bg-slate-800" icon={<Medal className="w-6 h-6 text-slate-500 dark:text-slate-300" />} />
+          <PodiumCard donor={DONORS[0]} delay={0} height="h-80" color="border-amber-400 bg-amber-50/90 dark:bg-amber-900/20" icon={<Trophy className="w-8 h-8 text-amber-500" />} isFirst />
+          <PodiumCard donor={DONORS[2]} delay={0.4} height="h-56" color="border-orange-300 dark:border-orange-800 bg-orange-50/90 dark:bg-orange-900/10" icon={<Medal className="w-6 h-6 text-orange-600" />} />
         </div>
 
         {/* List */}
@@ -54,7 +54,7 @@ export default function Leaderboard() {
             >
               <div className="flex items-center gap-4">
                 <span className="font-display font-bold text-slate-400 w-6 text-center text-lg">#{donor.rank}</span>
-                <img src={donor.avatar} alt={donor.name} className="w-10 h-10 rounded-full border border-slate-200 dark:border-white/10" />
+                <img src={donor.avatar} alt={donor.name} className="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-700" />
                 <div>
                   <h4 className="font-bold text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-500 transition-colors">{donor.name}</h4>
                   <span className="text-xs text-slate-500 font-medium">{donor.badge}</span>
