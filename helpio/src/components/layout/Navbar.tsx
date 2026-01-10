@@ -20,10 +20,10 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: 'How it Works', href: '#how-it-works' },
-    { name: 'Latest Wishes', href: '#wish-feed' },
-    { name: 'Leaderboard', href: '#leaderboard' },
-    { name: 'Impact', href: '#impact' },
+    { name: 'How it Works', href: '/#how-it-works' }, // Added / for home anchor
+  { name: 'Browse Wishes', href: '/wishes' },       // NEW PAGE LINK
+  { name: 'Leaderboard', href: '/#leaderboard' },   // Added / for home anchor
+  { name: 'Stories', href: '/stories' },         // NEW PAGE LINK
   ];
 
   return (
