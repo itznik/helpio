@@ -2,32 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #0f172a; /* Midnight Navy */
-  --foreground: #f8fafc; /* White-ish text */
-  
-  --primary-glow: conic-gradient(from 180deg at 50% 50%, #14b8a633 0deg, #0f172a 360deg);
-  --secondary-glow: radial-gradient(rgba(245, 158, 11, 0.1), rgba(255, 255, 255, 0));
+@layer base {
+  :root {
+    /* Light Mode Defaults */
+    --background: #ffffff;
+    --foreground: #0f172a;
+    --card-bg: rgba(255, 255, 255, 0.8);
+    --border-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .dark {
+    /* Dark Mode Defaults */
+    --background: #0f172a; /* Midnight Navy */
+    --foreground: #f8fafc;
+    --card-bg: rgba(15, 23, 42, 0.6);
+    --border-color: rgba(255, 255, 255, 0.1);
+  }
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
-  overflow-x: hidden; /* Prevent horizontal scroll on mobile */
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth Transition */
 }
 
-/* Custom Utilities for Glassmorphism */
+/* Update Glass Panel to use variables */
 @layer utilities {
   .glass-panel {
-    @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl;
+    @apply bg-[var(--card-bg)] backdrop-blur-lg border border-[var(--border-color)] shadow-xl;
   }
   
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-emerald-600;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-teal-500 to-emerald-600;
   }
   
   .text-gradient-gold {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-200 to-amber-500;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-amber-600;
   }
 }
