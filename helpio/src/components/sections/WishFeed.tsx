@@ -3,7 +3,6 @@
 import WishCard from '../ui/WishCard';
 import { motion } from 'framer-motion';
 
-// Dummy Data to visualize the look
 const WISHES = [
   {
     id: 1,
@@ -33,7 +32,7 @@ const WISHES = [
     story: "I am a digital artist trying to get commissions. My drawing tablet broke last week and I can't work without it.",
     amount: 85,
     category: "Career",
-    verified: false, // Not verified yet
+    verified: false,
   }
 ];
 
@@ -42,17 +41,15 @@ export default function WishFeed() {
     <section className="py-20 relative z-10">
       <div className="container mx-auto px-6">
         
-        {/* Section Header */}
+        {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
           <div>
             <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-900 dark:text-white mb-2">
-  Latest Requests
-</h2>
-          <p className="text-slate-600 dark:text-slate-400">
-  Real people. Real needs. Verified impact.
-</p>
+              Latest Requests
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400">Real people. Real needs. Verified impact.</p>
           </div>
-          <button className="text-teal-400 font-medium hover:text-teal-300 transition-colors">
+          <button className="text-teal-600 dark:text-teal-400 font-medium hover:underline transition-all">
             View all categories &rarr;
           </button>
         </div>
@@ -67,10 +64,7 @@ export default function WishFeed() {
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
             >
-              <WishCard 
-                {...wish} 
-                colorIndex={index} // Passes index to rotate colors
-              />
+              <WishCard {...wish} />
             </motion.div>
           ))}
         </div>
