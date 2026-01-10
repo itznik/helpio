@@ -2,12 +2,45 @@
 
 import { motion } from 'framer-motion';
 
+// 1. RAW DATA (No "k" or "M" here, just real numbers)
 const STATS = [
-  { label: "Total Donated", value: "$2.4M+", color: "text-emerald-600 dark:text-emerald-400" },
-  { label: "Wishes Granted", value: "8,500", color: "text-blue-600 dark:text-blue-400" },
-  { label: "Communities", value: "142", color: "text-amber-600 dark:text-amber-400" },
-  { label: "Success Rate", value: "94%", color: "text-purple-600 dark:text-purple-400" },
+  { 
+    label: "Total Donated", 
+    value: 2400000, // Real number
+    prefix: "$",    // Currency symbol
+    color: "text-emerald-600 dark:text-emerald-400" 
+  },
+  { 
+    label: "Wishes Granted", 
+    value: 8500,    // Will become 8.5k
+    prefix: "", 
+    color: "text-blue-600 dark:text-blue-400" 
+  },
+  { 
+    label: "Communities", 
+    value: 142,     // Will stay 142
+    prefix: "", 
+    color: "text-amber-600 dark:text-amber-400" 
+  },
+  { 
+    label: "Success Rate", 
+    value: 94,      // Will stay 94
+    suffix: "%",    // Special suffix for percentage
+    prefix: "",
+    color: "text-purple-600 dark:text-purple-400" 
+  },
 ];
+
+// 2. THE LOGIC (Converts raw numbers to 1.2k, 5M, etc.)
+const formatCompactNumber = (number: number) => {
+  if (number >= 1000000) {
+    return (number / 1000000).toFixed(1).replace(/\.0$/, '') + 'M'; // 2.5M
+  }
+  if (number >= 1000) {
+    return (number / 1000).toFixed(1).replace(/\.0$/, '') + 'k'; // 8.5k
+  }
+  return number.toString(); // 0 - 999
+};
 
 export default function OurImpact() {
   return (
@@ -34,12 +67,11 @@ export default function OurImpact() {
               transition={{ delay: index * 0.1 }}
               className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex flex-col justify-center items-center h-full"
             >
-              {/* FIX: 
-                  - Mobile: break-words (Wraps if screen is tiny)
-                  - Desktop: whitespace-nowrap (Forces 1 line, prevents height stretching) 
-              */}
               <div className={`text-2xl sm:text-3xl md:text-5xl font-bold mb-2 break-words md:whitespace-nowrap w-full md:w-auto ${stat.color}`}>
-                {stat.value}
+                {/* LOGIC APPLIED HERE */}
+                {stat.prefix}
+                {formatCompactNumber(stat.value)}
+                {stat.suffix || ''}
               </div>
               <div className="text-xs md:text-sm font-bold text-slate-500 uppercase tracking-wider">
                 {stat.label}
@@ -62,7 +94,6 @@ export default function OurImpact() {
             </button>
           </div>
           
-          {/* Background decoration */}
           <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
             <div className="absolute top-[-50%] left-[-20%] w-[500px] h-[500px] bg-teal-500 rounded-full blur-[100px]" />
             <div className="absolute bottom-[-50%] right-[-20%] w-[500px] h-[500px] bg-indigo-500 rounded-full blur-[100px]" />
