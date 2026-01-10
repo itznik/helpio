@@ -27,7 +27,7 @@ export default function Leaderboard() {
             <Crown className="w-4 h-4" />
             Top Philanthropists
           </div>
-          {/* TITLE FIX: Explicitly Slate-900 in Light Mode */}
+          {/* TITLE FIX: "The" is explicit black, Hall of Fame is Gold */}
           <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900 dark:text-white mb-4">
             The <span className="text-gradient-gold">Hall of Fame</span>
           </h2>
@@ -57,13 +57,11 @@ export default function Leaderboard() {
                 <span className="font-display font-bold text-slate-400 w-6 text-center text-lg">#{donor.rank}</span>
                 <img src={donor.avatar} alt={donor.name} className="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-700" />
                 <div>
-                  {/* NAME FIX: Explicitly Slate-900 in Light Mode */}
                   <h4 className="font-bold text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-500 transition-colors">{donor.name}</h4>
                   <span className="text-xs text-slate-500 font-medium">{donor.badge}</span>
                 </div>
               </div>
               <div className="text-right">
-                 {/* AMOUNT FIX: Explicitly Slate-900 in Light Mode */}
                  <div className="font-bold text-slate-900 dark:text-white">${donor.amount.toLocaleString()}</div>
                  <div className="text-xs text-slate-500">Donated</div>
               </div>
@@ -87,7 +85,6 @@ function PodiumCard({ donor, delay, height, color, icon, isFirst = false }: any)
         <img src={donor.avatar} alt={donor.name} className="w-full h-full object-cover" />
       </div>
       <div className="mb-3">{icon}</div>
-      {/* PODIUM NAME FIX: Explicitly Slate-900 in Light Mode */}
       <h3 className={`font-bold text-lg ${isFirst ? 'text-amber-700 dark:text-amber-300' : 'text-slate-900 dark:text-white'}`}>{donor.name}</h3>
       <p className="text-slate-500 text-sm mb-2 font-medium">{donor.badge}</p>
       <div className={`px-4 py-1 rounded-full text-sm font-bold shadow-sm ${isFirst ? 'bg-amber-500 text-white' : 'bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-white'}`}>
