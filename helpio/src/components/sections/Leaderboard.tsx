@@ -33,12 +33,13 @@ export default function Leaderboard() {
             <Crown className="w-4 h-4" />
             Top Philanthropists
           </motion.div>
-          <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
-            The <span className="text-gradient-gold">Hall of Fame</span>
-          </h2>
-          <p className="text-slate-400 max-w-xl mx-auto">
-            Honoring those who have changed lives. These top donors have fulfilled over 500 wishes combined.
-          </p>
+          <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-900 dark:text-white mb-4">
+  The <span className="text-gradient-gold">Hall of Fame</span>
+</h2>
+
+<p className="text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
+  Honoring those who have changed lives.
+</p>
         </div>
 
         {/* The Podium (Top 3) */}
@@ -69,12 +70,16 @@ export default function Leaderboard() {
                 <span className="font-display font-bold text-slate-500 w-6 text-center text-lg">#{donor.rank}</span>
                 <img src={donor.avatar} alt={donor.name} className="w-10 h-10 rounded-full border border-white/10" />
                 <div>
-                  <h4 className="font-bold text-white group-hover:text-amber-300 transition-colors">{donor.name}</h4>
+                  <h4 className="font-bold text-slate-900 dark:text-white group-hover:text-amber-500 transition-colors">
+  {donor.name}
+</h4>
                   <span className="text-xs text-slate-500">{donor.badge}</span>
                 </div>
               </div>
               <div className="text-right">
-                 <div className="font-bold text-white">${donor.amount.toLocaleString()}</div>
+                 <div className="font-bold text-slate-900 dark:text-white">
+  ${donor.amount.toLocaleString()}
+</div>
                  <div className="text-xs text-slate-500">Donated</div>
               </div>
             </motion.div>
