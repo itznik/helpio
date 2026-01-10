@@ -25,19 +25,20 @@ export default function OurImpact() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center mb-20">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 text-center mb-20">
           {STATS.map((stat, index) => (
             <motion.div
               key={stat.label}
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1 }}
-              className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800"
+              className="p-4 md:p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex flex-col justify-center items-center"
             >
-              <div className={`text-4xl md:text-5xl font-bold mb-2 ${stat.color}`}>
+              {/* FIX: Responsive font size + break-words to stop overflow */}
+              <div className={`text-2xl sm:text-3xl md:text-5xl font-bold mb-2 break-words w-full ${stat.color}`}>
                 {stat.value}
               </div>
-              <div className="text-sm font-bold text-slate-500 uppercase tracking-wider">
+              <div className="text-xs md:text-sm font-bold text-slate-500 uppercase tracking-wider">
                 {stat.label}
               </div>
             </motion.div>
@@ -45,9 +46,9 @@ export default function OurImpact() {
         </div>
 
         {/* CTA Banner */}
-        <div className="rounded-3xl bg-slate-900 dark:bg-white overflow-hidden relative px-8 py-16 text-center">
+        <div className="rounded-3xl bg-slate-900 dark:bg-white overflow-hidden relative px-8 py-16 text-center shadow-2xl">
           <div className="relative z-10">
-            <h3 className="text-3xl md:text-4xl font-bold text-white dark:text-slate-900 mb-6">
+            <h3 className="text-2xl md:text-4xl font-bold text-white dark:text-slate-900 mb-6">
               Ready to make your first impact?
             </h3>
             <p className="text-slate-300 dark:text-slate-600 mb-8 max-w-xl mx-auto text-lg">
@@ -58,7 +59,6 @@ export default function OurImpact() {
             </button>
           </div>
           
-          {/* Background Abstract decoration */}
           <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
             <div className="absolute top-[-50%] left-[-20%] w-[500px] h-[500px] bg-teal-500 rounded-full blur-[100px]" />
             <div className="absolute bottom-[-50%] right-[-20%] w-[500px] h-[500px] bg-indigo-500 rounded-full blur-[100px]" />
