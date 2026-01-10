@@ -31,8 +31,8 @@ export default function Home() {
             <span>The Future of Philanthropy is Here</span>
           </div>
 
-          {/* Headline - FORCED BLACK */}
-          <h1 className="text-5xl md:text-8xl font-display font-bold tracking-tight text-black dark:text-white leading-[1.1] mb-8">
+          {/* Headline - FORCE BLACK IN LIGHT MODE */}
+          <h1 className="text-5xl md:text-8xl font-display font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-8">
             Turn wealth into <br />
             <span className="text-gradient">tangible impact.</span>
           </h1>
@@ -45,15 +45,15 @@ export default function Home() {
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            
+            {/* FORCE BLACK BUTTON IN LIGHT MODE */}
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="px-8 py-4 rounded-full bg-black hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-bold text-lg hover:scale-105 transition-all shadow-xl"
+              className="px-8 py-4 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold text-lg hover:scale-105 transition-all shadow-xl"
             >
               Make a Wish
             </button>
             
-            <button className="group px-8 py-4 rounded-full border border-slate-300 dark:border-white/10 bg-white dark:bg-slate-900/50 text-black dark:text-white font-semibold text-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-2">
+            <button className="group px-8 py-4 rounded-full border border-slate-300 dark:border-white/10 bg-white dark:bg-slate-900/50 text-slate-900 dark:text-white font-semibold text-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-2">
               View Leaderboard <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
