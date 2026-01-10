@@ -1,14 +1,130 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
+// Logic
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ===========================================
+// 1. USER & SECURITY (High-End Profile)
+// ===========================================
+model User {
+  id            String    @id @default(uuid()) // Unique ID
+  email         String    @unique
+  fullName      String?
+  avatarUrl     String?
+  role          UserRole  @default(USER)       // USER, ADMIN, MODERATOR
+  country       String?   // Detected via Geo-IP
+  currency      String    @default("USD")      // Preferred currency
+  
+  // Security & Verification
+  isVerified    Boolean   @default(false)
+  kycLevel      Int       @default(0)          // 0=None, 1=ID, 2=Video
+  
+  // Relationships
+  wishes        Wish[]
+  donations     Donation[]
+  orders        Order[]                        // If they order items directly
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  MODERATOR     // Can approve wishes but not touch money
+  SPONSOR       // Corporate Account
+}
+
+// ===========================================
+// 2. THE WISH ENGINE (The Core Product)
+// ===========================================
+model Wish {
+  id              String      @id @default(uuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+  
+  // Content
+  title           String
+  description     String
+  category        String
+  images          String[]    // Array of public image URLs
+  
+  // The "Skin in the Game" Logic
+  listingFeePaid  Boolean     @default(false) // Did they pay the $1 filter fee?
+  verificationDocs String[]   // ENCRYPTED private URLs (Only Admin sees these)
+  
+  // Financials
+  goalAmount      Decimal     @db.Decimal(10, 2)
+  raisedAmount    Decimal     @default(0) @db.Decimal(10, 2)
+  currency        String      @default("USD")
+  
+  // Status Flow
+  status          WishStatus  @default(PENDING_REVIEW)
+  
+  // For "Invisible Margin" Model (Product Matching)
+  linkedProductId String?     // If this wish is for a specific item (e.g., Laptop)
+  vendorCost      Decimal?    // The B2B price we pay (Hidden from user)
+  
+  donations       Donation[]
+  createdAt       DateTime    @default(now())
+}
+
+enum WishStatus {
+  PENDING_PAYMENT // User hasn't paid the $1 fee yet
+  PENDING_REVIEW  // Paid, waiting for Admin approval
+  APPROVED        // Live on site
+  REJECTED
+  FUNDED          // Goal met
+  FULFILLED       // Item delivered / Money sent
+}
+
+// ===========================================
+// 3. MONEY FLOW (The "Invisible Margin" & Tips)
+// ===========================================
+model Donation {
+  id              String    @id @default(uuid())
+  donorId         String?   // Optional (Anonymous donations)
+  donor           User?     @relation(fields: [donorId], references: [id])
+  wishId          String
+  wish            Wish      @relation(fields: [wishId], references: [id])
+  
+  // The Breakdown
+  amountTotal     Decimal   @db.Decimal(10, 2) // What the user paid
+  amountToWish    Decimal   @db.Decimal(10, 2) // What goes to the Wish (100%)
+  amountTip       Decimal   @default(0)        // The Tip for Helpio
+  
+  // Payment Tech
+  paymentGateway  String    // "stripe", "razorpay"
+  transactionId   String    // External ID
+  status          String    // "succeeded", "pending", "failed"
+  
+  createdAt       DateTime  @default(now())
+}
+
+// ===========================================
+// 4. FULFILLMENT (Tracking Real Impact)
+// ===========================================
+model Order {
+  id              String    @id @default(uuid())
+  wishId          String    @unique
+  recipientId     String
+  recipient       User      @relation(fields: [recipientId], references: [id])
+  
+  // B2B Fulfillment
+  vendorName      String    // "Amazon Business", "Apollo Pharmacy"
+  vendorOrderId   String
+  trackingUrl     String?
+  
+  // Evidence
+  proofImageUrl   String?   // User uploads photo of received item
+  thankYouNote    String?
+  
+  status          String    // "ordered", "shipped", "delivered"
+  createdAt       DateTime  @default(now())
 }
