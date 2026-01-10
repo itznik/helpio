@@ -38,38 +38,37 @@ const WISHES = [
 
 export default function WishFeed() {
   return (
-    <section className="py-20 relative z-10">
-      <div className="container mx-auto px-6">
-        
-        {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-          <div>
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-900 dark:text-white mb-2">
-              Latest Requests
-            </h2>
-            <p className="text-slate-600 dark:text-slate-400">Real people. Real needs. Verified impact.</p>
-          </div>
-          <button className="text-teal-600 dark:text-teal-400 font-medium hover:underline transition-all">
-            View all categories &rarr;
-          </button>
+    <section className="container mx-auto px-6 relative z-10">
+      
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+        <div>
+          {/* Title: Dark in Light Mode */}
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-900 dark:text-white mb-2">
+            Latest Requests
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400 font-medium">Real people. Real needs. Verified impact.</p>
         </div>
-
-        {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {WISHES.map((wish, index) => (
-            <motion.div
-              key={wish.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <WishCard {...wish} />
-            </motion.div>
-          ))}
-        </div>
-
+        <button className="text-teal-700 dark:text-teal-400 font-bold hover:underline transition-all">
+          View all categories &rarr;
+        </button>
       </div>
+
+      {/* Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {WISHES.map((wish, index) => (
+          <motion.div
+            key={wish.id}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: index * 0.1 }}
+          >
+            <WishCard {...wish} />
+          </motion.div>
+        ))}
+      </div>
+
     </section>
   );
 }
