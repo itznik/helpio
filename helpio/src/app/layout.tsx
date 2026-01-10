@@ -1,25 +1,14 @@
 import type { Metadata } from "next";
-import { Fraunces, Plus_Jakarta_Sans } from "next/font/google"; // New Fonts
+import { Inter, Outfit } from "next/font/google"; // Importing fonts
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import Navbar from "@/components/layout/Navbar"; // We will build this next
 
-// Premium Serif for Headings
-const fraunces = Fraunces({ 
-  subsets: ["latin"],
-  variable: "--font-heading",
-  display: "swap",
-});
-
-// Modern Sans for Body
-const jakarta = Plus_Jakarta_Sans({ 
-  subsets: ["latin"], 
-  variable: "--font-body",
-  display: "swap",
-});
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
-  title: "Helpio - Direct Impact, Zero Doubt",
-  description: "The platform bridging generosity and genuine needs.",
+  title: "Helpio | Grant a Wish",
+  description: "A platform connecting wealth with need.",
 };
 
 export default function RootLayout({
@@ -28,16 +17,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${fraunces.variable} ${jakarta.variable} font-body bg-background antialiased`}>
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="light" // Default to light to show off the colors
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-        </ThemeProvider>
+    <html lang="en" className="dark">
+      <body className={`${inter.variable} ${outfit.variable} antialiased selection:bg-teal-500 selection:text-white`}>
+        {/* Navbar sits on top of everything */}
+        <Navbar /> 
+        {children}
       </body>
     </html>
   );
