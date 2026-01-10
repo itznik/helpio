@@ -15,8 +15,8 @@ export default function WishFeed() {
       
       <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
         <div>
-          {/* HEADER FIX: Forced Black */}
-          <h2 className="text-3xl md:text-4xl font-display font-bold text-black dark:text-white mb-2">
+          {/* HEADER FIX: Black in Light Mode */}
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-900 dark:text-white mb-2">
             Latest Requests
           </h2>
           <p className="text-slate-600 dark:text-slate-400 font-medium">Real people. Real needs. Verified impact.</p>
