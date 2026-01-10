@@ -1,23 +1,23 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@layer base {
-  :root {
-    /* Light Mode Defaults */
-    --background: #ffffff;
-    --foreground: #0f172a;
-    --card-bg: rgba(255, 255, 255, 0.8);
-    --border-color: rgba(0, 0, 0, 0.1);
-  }
+:root {
+  /* Light Mode Defaults */
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --border-color: rgba(0, 0, 0, 0.1);
+  
+  /* Aurora Glow Colors */
+  --glow-primary: rgba(20, 184, 166, 0.2);
+  --glow-secondary: rgba(245, 158, 11, 0.1);
+}
 
-  .dark {
-    /* Dark Mode Defaults */
-    --background: #0f172a; /* Midnight Navy */
-    --foreground: #f8fafc;
-    --card-bg: rgba(15, 23, 42, 0.6);
-    --border-color: rgba(255, 255, 255, 0.1);
-  }
+/* Dark Mode Overrides */
+.dark {
+  --background: #0f172a; /* Midnight Navy */
+  --foreground: #f8fafc;
+  --card-bg: rgba(15, 23, 42, 0.6);
+  --border-color: rgba(255, 255, 255, 0.1);
 }
 
 body {
@@ -25,15 +25,11 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden;
-  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth Transition */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Update Glass Panel to use variables */
+/* Custom Utilities */
 @layer utilities {
-  .glass-panel {
-    @apply bg-[var(--card-bg)] backdrop-blur-lg border border-[var(--border-color)] shadow-xl;
-  }
-  
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-teal-500 to-emerald-600;
   }
@@ -41,4 +37,15 @@ body {
   .text-gradient-gold {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-amber-600;
   }
+}
+
+/* FIX: We use standard CSS here instead of @apply to prevent 
+   the "unknown utility class" build error in Tailwind v4 
+*/
+.glass-panel {
+  background-color: var(--card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
