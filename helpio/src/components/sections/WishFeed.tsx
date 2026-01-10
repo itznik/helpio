@@ -13,9 +13,10 @@ const WISHES = [
 export default function WishFeed() {
   return (
     <section className="container mx-auto px-6 relative z-10">
+      
       <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
         <div>
-          {/* Header Title: Explicit Black */}
+          {/* TITLE FIX: Explicitly Slate-900 (Black) in Light Mode */}
           <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-900 dark:text-white mb-2">
             Latest Requests
           </h2>
@@ -39,6 +40,7 @@ export default function WishFeed() {
           </motion.div>
         ))}
       </div>
+
     </section>
   );
 }
