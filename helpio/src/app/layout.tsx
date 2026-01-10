@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google"; // Importing fonts
+import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer"; 
-import { ThemeProvider } from "@/components/shared/ThemeProvider"; 
+import Footer from "@/components/layout/Footer";
+import { ThemeProvider } from "@/components/shared/ThemeProvider";
 
-// 1. Configure Fonts
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
@@ -21,8 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      {/* 2. Inject Variables into Body */}
-      <body className={`${inter.variable} ${outfit.variable} antialiased bg-background text-foreground selection:bg-teal-500 selection:text-white`}>
+      <body className={`${inter.variable} ${outfit.variable} antialiased bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 transition-colors duration-300`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <div className="flex flex-col min-h-screen">
             <Navbar />
