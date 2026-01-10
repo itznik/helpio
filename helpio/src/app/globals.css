@@ -2,58 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    /* Based on Wishly Reference */
-    --background: 260 100% 98%;    /* Very light purple tint */
-    --foreground: 260 40% 10%;     /* Dark purple text */
-
-    /* The "Wishly" Electric Indigo */
-    --primary: 255 85% 60%;        /* Vibrant Purple/Blue */
-    --primary-foreground: 0 0% 100%;
-
-    /* The "Wishly" Soft Pink Accent */
-    --secondary: 320 90% 85%;      /* Soft Pink */
-    --secondary-foreground: 260 50% 20%;
-
-    /* Accent for "Get Spoiled" type highlights */
-    --accent: 265 90% 60%;
-    --accent-foreground: 0 0% 100%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 260 40% 10%;
-    
-    --border: 260 20% 90%;
-    --input: 260 20% 90%;
-    --ring: 255 85% 60%;
-    
-    --radius: 1.5rem; /* Super rounded corners like the app screenshots */
-  }
-
-  .dark {
-    --background: 260 50% 10%;     /* Deep Deep Purple */
-    --foreground: 260 20% 90%;
-
-    --primary: 255 80% 65%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 320 70% 60%;
-    --secondary-foreground: 0 0% 100%;
-
-    --card: 260 40% 14%;
-    --card-foreground: 260 20% 90%;
-    
-    --border: 260 40% 20%;
-    --input: 260 40% 20%;
-    --ring: 255 80% 65%;
-  }
+:root {
+  --background: #0f172a; /* Midnight Navy */
+  --foreground: #f8fafc; /* White-ish text */
+  
+  --primary-glow: conic-gradient(from 180deg at 50% 50%, #14b8a633 0deg, #0f172a 360deg);
+  --secondary-glow: radial-gradient(rgba(245, 158, 11, 0.1), rgba(255, 255, 255, 0));
 }
 
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden; /* Prevent horizontal scroll on mobile */
+}
+
+/* Custom Utilities for Glassmorphism */
 @layer utilities {
-  .font-heading {
-    font-family: var(--font-heading);
+  .glass-panel {
+    @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl;
   }
-  .font-body {
-    font-family: var(--font-body);
+  
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-emerald-600;
+  }
+  
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-200 to-amber-500;
   }
 }
