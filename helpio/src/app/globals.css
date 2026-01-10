@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
-/* --- 1. BASE SETTINGS --- */
+/* --- 1. BASE STYLES --- */
+/* We rely strictly on Tailwind's 'dark:' classes, not custom variables */
 :root {
   --background: #ffffff;
   --foreground: #020617;
@@ -18,19 +19,20 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* --- 2. GRID VISIBILITY (Ultra Subtle) --- */
+/* --- 2. GRID VISIBILITY --- */
 .bg-grid {
   background-size: 40px 40px;
-  /* Very light gray for Light Mode */
-  background-image: linear-gradient(to right, #e2e8f0 1px, transparent 1px),
-                    linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
-  mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+  /* Darker gray (#cbd5e1) so it is visible on white background */
+  background-image: linear-gradient(to right, #cbd5e1 1px, transparent 1px),
+                    linear-gradient(to bottom, #cbd5e1 1px, transparent 1px);
+  mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
   z-index: -1;
-  opacity: 0.5;
+  opacity: 0.5; /* Visibility Fix */
 }
 
 .dark .bg-grid {
+  /* Lighter gray for dark mode */
   background-image: linear-gradient(to right, #1e293b 1px, transparent 1px),
                     linear-gradient(to bottom, #1e293b 1px, transparent 1px);
   opacity: 0.3;
