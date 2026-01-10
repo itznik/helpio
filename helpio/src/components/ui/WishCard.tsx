@@ -44,9 +44,9 @@ export default function WishCard({ name, avatar, wish, story, amount, category, 
 
         {/* The Wish */}
         <div className="mb-6 flex-grow">
-          <h4 className="text-lg font-display font-bold text-slate-900 dark:text-white mb-3 leading-snug group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
-            {wish}
-          </h4>
+          <h4 className="text-lg font-display font-bold text-slate-900 dark:text-white mb-3 leading-snug">
+  "{wish}"
+</h4>
           <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-3 leading-relaxed">
             {story}
           </p>
@@ -57,17 +57,17 @@ export default function WishCard({ name, avatar, wish, story, amount, category, 
           <div>
             <span className="block text-xs text-slate-400 mb-0.5">Needed</span>
             <span className="text-lg font-bold text-slate-900 dark:text-white">
-              ${amount}
-            </span>
+  ${amount}
+</span>
           </div>
           
           <div className="flex gap-2">
              <button className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 text-slate-500 dark:text-slate-400 transition-colors">
                <Share2 className="w-4 h-4" />
              </button>
-             <button className="px-4 py-2 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-bold shadow-lg hover:opacity-90 transition-opacity">
-               Grant
-             </button>
+             <button className="px-4 py-2 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-bold shadow-lg">
+  Grant
+</button>
           </div>
         </div>
       </div>
