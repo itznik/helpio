@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  // 'class' strategy forces Tailwind to wait for the .dark class from your toggle
+  // CRITICAL: 'class' strategy enables the toggle button to work
   darkMode: "class", 
   
   content: [
@@ -11,7 +11,7 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      // Mapping CSS variables (Standard V3 Method)
+      // Mapping CSS variables to Tailwind colors
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
