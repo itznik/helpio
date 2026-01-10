@@ -43,15 +43,13 @@ export default function Home() {
           </motion.div>
 
           {/* Headline - Fixed Contrast */}
-          <h1 className="text-5xl md:text-8xl font-display font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-8">
-            Turn wealth into <br />
-            <span className="text-gradient">tangible impact.</span>
-          </h1>
-
+          <h1 className="text-5xl md:text-7xl font-display font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-8">
+  Turn wealth into <br />
+  <span className="text-gradient">tangible impact.</span>
+</h1>
           <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Direct peer-to-peer giving. No middlemen, no mystery. 
-            See exactly who you help and watch the world change, one wish at a time.
-          </p>
+  Direct peer-to-peer giving
+</p>
 
           {/* Buttons - High Visibility */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
