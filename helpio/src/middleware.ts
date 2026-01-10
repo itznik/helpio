@@ -1,38 +1,30 @@
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Map countries to currencies
-const CURRENCY_MAP: Record<string, string> = {
-  US: 'USD',
-  IN: 'INR',
-  GB: 'GBP',
-  EU: 'EUR',
-  // Default fallback
-  DEFAULT: 'USD'
-};
+export async function middleware(req: NextRequest) {
+  const res = NextResponse.next();
+  const supabase = createMiddlewareClient({ req, res });
 
-export function middleware(request: NextRequest) {
-  const response = NextResponse.next();
+  // 1. Refresh Session
+  const { data: { session } } = await supabase.auth.getSession();
 
-  // 1. GEO-DETECTION (Vercel/Next.js Logic)
-  const country = request.geo?.country || request.headers.get('x-vercel-ip-country') || 'US';
-  const currency = CURRENCY_MAP[country] || CURRENCY_MAP.DEFAULT;
+  // 2. Route Protection Logic
+  const isAuthRoute = req.nextUrl.pathname.startsWith('/dashboard') || req.nextUrl.pathname.startsWith('/create');
+  
+  if (isAuthRoute && !session) {
+    // Redirect unauthenticated users to login
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
 
-  // 2. SECURITY HEADERS (High-End Encryption Standards)
-  response.headers.set('X-DNS-Prefetch-Control', 'on');
-  response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
-  response.headers.set('X-Frame-Options', 'SAMEORIGIN');
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('Referrer-Policy', 'origin-when-cross-origin');
+  // 3. Keep our previous Geo-Detection Logic
+  // (Merge with previous middleware code here or chain them)
+  const country = req.geo?.country || 'US';
+  res.headers.set('x-user-country', country);
 
-  // 3. INJECT LOCALIZATION (Pass to frontend via headers)
-  response.headers.set('x-user-country', country);
-  response.headers.set('x-user-currency', currency);
-
-  return response;
+  return res;
 }
 
-// Apply to all API and Page routes
 export const config = {
-  matcher: '/:path*',
+  matcher: ['/dashboard/:path*', '/create/:path*', '/api/:path*'],
 };
