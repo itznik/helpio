@@ -4,7 +4,8 @@ import { useState } from 'react'; // Import useState
 import { motion } from 'framer-motion';
 import { ArrowRight, Heart } from 'lucide-react';
 import WishFeed from '@/components/sections/WishFeed';
-import CreateWishModal from '@/components/features/CreateWishModal'; // Import the Modal
+import CreateWishModal from '@/components/features/CreateWishModal';
+import Leaderboard from '@/components/sections/Leaderboard';
 
 export default function Home() {
   // State to control modal visibility
@@ -64,6 +65,7 @@ export default function Home() {
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
       />
+      <Leaderboard />
 
     </main>
   );
