@@ -1,8 +1,6 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  // 1. THIS IS THE CRITICAL FIX.
-  // It forces Tailwind to wait for the "dark" class instead of checking your OS.
   darkMode: "class", 
   
   content: [
