@@ -5,38 +5,68 @@
 @layer base {
   :root {
     --background: 0 0% 100%;       /* White */
-    --foreground: 222.2 84% 4.9%;  /* Black */
+    --foreground: 222.2 84% 4.9%;  /* Slate 900 */
   }
  
   .dark {
-    --background: 222.2 84% 4.9%;  /* Black */
-    --foreground: 210 40% 98%;     /* White */
+    --background: 222.2 84% 4.9%;  /* Slate 950 */
+    --foreground: 210 40% 98%;     /* Slate 50 */
   }
-}
- 
-@layer base {
+
+  /* Default Body Styles */
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
-/* Grids & Utilities */
+/* --- 1. POLISHED GRID BACKGROUND --- */
 .bg-grid {
   background-size: 40px 40px;
-  background-image: linear-gradient(to right, #cbd5e1 1px, transparent 1px),
-                    linear-gradient(to bottom, #cbd5e1 1px, transparent 1px);
-  mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+  /* Light Mode: Subtle Blue-Gray Lines */
+  background-image: linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+                    linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
+  /* Mask to fade out edges */
+  mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
   z-index: -1;
-  opacity: 0.5;
+  opacity: 0.6;
 }
 
 .dark .bg-grid {
+  /* Dark Mode: Subtle Slate Lines */
   background-image: linear-gradient(to right, #1e293b 1px, transparent 1px),
                     linear-gradient(to bottom, #1e293b 1px, transparent 1px);
   opacity: 0.3;
 }
 
+/* --- 2. GLASS PANELS (Cards) --- */
 .glass-panel {
-  @apply bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-md;
+  @apply bg-white/70 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-xl transition-all;
+}
+
+/* --- 3. RESTORED GRADIENTS --- */
+
+/* Teal Gradient (Hero Text) */
+.text-gradient {
+  @apply bg-clip-text text-transparent;
+  /* Light Mode: Deep Teal to Blue (Readable on White) */
+  background-image: linear-gradient(to right, #0f766e, #0369a1); 
+}
+
+.dark .text-gradient {
+  /* Dark Mode: Neon Teal to Cyan (Readable on Black) */
+  background-image: linear-gradient(to right, #2dd4bf, #22d3ee);
+}
+
+/* Gold Gradient (Hall of Fame) */
+.text-gradient-gold {
+  @apply bg-clip-text text-transparent;
+  /* Light Mode: Rich Amber to Orange */
+  background-image: linear-gradient(to right, #d97706, #ea580c);
+}
+
+.dark .text-gradient-gold {
+  /* Dark Mode: Bright Gold to Yellow */
+  background-image: linear-gradient(to right, #fbbf24, #f59e0b);
 }
