@@ -31,7 +31,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Links Columns - Headers are strictly Slate-900 */}
+          {/* Links Columns */}
           <FooterColumn title="Platform">
             <FooterLink href="#">How it Works</FooterLink>
             <FooterLink href="#">Browse Wishes</FooterLink>
