@@ -13,9 +13,9 @@ export default function Home() {
   return (
     <main className="min-h-screen relative flex flex-col">
       
-      {/* Backgrounds */}
-      <div className="fixed inset-0 z-0 pointer-events-none bg-grid" />
-      <div className="fixed top-[-10%] left-1/2 -translate-x-1/2 w-[600px] h-[500px] bg-teal-500/10 blur-[100px] rounded-full -z-10" />
+      {/* Background Grid */}
+      <div className="fixed inset-0 z-0 pointer-events-none bg-grid opacity-100" />
+      <div className="fixed top-[-10%] left-1/2 -translate-x-1/2 w-[600px] h-[500px] bg-teal-400/20 blur-[120px] rounded-full -z-10" />
 
       {/* Hero Section */}
       <section className="relative z-10 pt-32 pb-20 px-6 min-h-[85vh] flex flex-col items-center justify-center text-center">
@@ -26,36 +26,35 @@ export default function Home() {
            className="max-w-4xl mx-auto"
         >
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 backdrop-blur-sm text-xs font-bold text-slate-700 dark:text-slate-300 mb-8 mx-auto shadow-sm">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-300 dark:border-white/10 bg-white dark:bg-slate-900/50 backdrop-blur-sm text-xs font-bold text-slate-700 dark:text-slate-300 mb-8 mx-auto shadow-sm">
             <Sparkles className="w-3 h-3 text-teal-600 dark:text-teal-400" />
             <span>The Future of Philanthropy is Here</span>
           </div>
 
-          {/* Headline - FORCED DARK COLOR IN LIGHT MODE */}
+          {/* Headline - FORCED BLACK IN LIGHT MODE */}
           <h1 className="text-5xl md:text-8xl font-display font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-8">
             Turn wealth into <br />
             <span className="text-gradient">tangible impact.</span>
           </h1>
 
-          {/* Subtext - FORCED DARK GRAY IN LIGHT MODE */}
+          {/* Subtext */}
           <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
             Direct peer-to-peer giving. No middlemen, no mystery. 
             See exactly who you help and watch the world change, one wish at a time.
           </p>
 
-          {/* Buttons - CRITICAL FIX FOR VISIBILITY */}
+          {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             
-            {/* Make a Wish Button: BLACK background in Light Mode, WHITE in Dark Mode */}
+            {/* BUTTON FIX: Black Background in Light Mode */}
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="px-8 py-4 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-gray-200 text-white dark:text-slate-900 font-bold text-lg hover:scale-105 transition-all shadow-xl"
+              className="px-8 py-4 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 font-bold text-lg hover:scale-105 transition-all shadow-xl"
             >
               Make a Wish
             </button>
             
-            {/* Secondary Button */}
-            <button className="group px-8 py-4 rounded-full border border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 text-slate-900 dark:text-white font-semibold text-lg hover:bg-slate-50 dark:hover:bg-white/10 transition-colors flex items-center gap-2">
+            <button className="group px-8 py-4 rounded-full border border-slate-300 dark:border-white/10 bg-white dark:bg-slate-900/50 text-slate-900 dark:text-white font-semibold text-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-2">
               View Leaderboard <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
@@ -63,7 +62,6 @@ export default function Home() {
         </motion.div>
       </section>
       
-      {/* Sections */}
       <div className="relative z-10 space-y-24 pb-24">
         <WishFeed />
         <Leaderboard />
