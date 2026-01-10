@@ -20,9 +20,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${outfit.variable} antialiased transition-colors duration-300`}>
-        {/* CRITICAL: attribute="class" MUST be here for Tailwind to work */}
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <body className={`${inter.variable} ${outfit.variable} antialiased bg-white dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300`}>
+        {/* FORCE LIGHT MODE DEFAULT to fix the "Stuck in Dark" bug */}
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <div className="flex flex-col min-h-screen">
             <Navbar />
             <div className="flex-grow">
