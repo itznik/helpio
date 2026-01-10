@@ -4,30 +4,26 @@
 
 @layer base {
   :root {
-    /* --- LIGHT MODE (White Background, Dark Text) --- */
-    --background: 0 0% 100%;       /* White */
-    --foreground: 222.2 84% 4.9%;  /* Slate 900 */
-    
-    /* Font Variables fallback */
-    --font-inter: 'Inter', sans-serif;
-    --font-outfit: 'Outfit', sans-serif;
+    /* --- LIGHT MODE DEFAULT (White Background, Black Text) --- */
+    --background: 0 0% 100%;       /* #ffffff */
+    --foreground: 222.2 84% 4.9%;  /* #020617 (Slate 900) */
   }
  
   .dark {
-    /* --- DARK MODE (Dark Background, White Text) --- */
-    --background: 222.2 84% 4.9%;  /* Slate 950 */
-    --foreground: 210 40% 98%;     /* Slate 50 */
+    /* --- DARK MODE OVERRIDE (Black Background, White Text) --- */
+    --background: 222.2 84% 4.9%;  /* #020617 (Slate 950) */
+    --foreground: 210 40% 98%;     /* #f8fafc (Slate 50) */
   }
 }
  
 @layer base {
   body {
+    /* Apply the variables to the body */
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
-/* --- GRID BACKGROUND (Visible in both modes) --- */
+/* --- GRID BACKGROUND --- */
 .bg-grid {
   background-size: 40px 40px;
   background-image: linear-gradient(to right, #cbd5e1 1px, transparent 1px),
@@ -44,14 +40,16 @@
   opacity: 0.3;
 }
 
-/* --- UTILITIES --- */
+/* --- GLASS PANEL UTILITY --- */
 .glass-panel {
   @apply bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-md;
 }
 
-.text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-teal-600 to-cyan-600 dark:from-teal-400 dark:to-cyan-400;
-}
-.text-gradient-gold {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-600 to-orange-600 dark:from-amber-300 dark:to-orange-400;
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-teal-600 to-cyan-600 dark:from-teal-400 dark:to-cyan-400;
+  }
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-600 to-orange-600 dark:from-amber-300 dark:to-orange-400;
+  }
 }
