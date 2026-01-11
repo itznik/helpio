@@ -1,37 +1,47 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Sparkles, ArrowRight, Lock, Mail, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase';
-import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { createBrowserClient } from '@supabase/ssr';
+import { ArrowRight, Mail, Lock, Loader2, Sparkles, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
+import LiveImpactVisualizer from '@/components/features/LiveImpactVisualizer';
+import { motion } from 'framer-motion';
 
 export default function LoginPage() {
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '' });
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+
+  // Create client-side supabase instance
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    
-    // 1. SECURE PASSWORD LOGIN
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: formData.email,
-      password: formData.password,
-    });
+    setLoading(true);
 
-    if (error) {
-      toast.error(error.message);
-      setIsLoading(false);
-    } else {
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (error) throw error;
+
       toast.success('Welcome back!');
-      // 2. REFRESH ROUTER & REDIRECT
-      router.refresh();
+      
+      // CRITICAL: Refresh router to sync server cookies before redirecting
+      router.refresh(); 
       router.push('/dashboard');
+
+    } catch (error: any) {
+      toast.error(error.message || 'Invalid credentials');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,127 +51,104 @@ export default function LoginPage() {
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
         },
       });
       if (error) throw error;
     } catch (error: any) {
-      toast.error(error.message || 'Failed to initiate Google login');
+      toast.error('Google login failed');
     }
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#020617] flex">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#020617] flex">
       
-      {/* LEFT: VISUAL SIDE */}
-      <div className="hidden lg:flex w-1/2 bg-slate-900 relative overflow-hidden items-center justify-center p-16">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=1600')] bg-cover bg-center opacity-20" />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
-        
-        <div className="relative z-10 max-w-lg">
-           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 border border-teal-500/30 text-teal-300 text-xs font-bold uppercase tracking-widest mb-6">
-              <Sparkles className="w-4 h-4" /> Secure Access
-           </div>
-           <h1 className="text-5xl font-display font-bold text-white mb-6 leading-tight">
-              Welcome back to the future of giving.
-           </h1>
-           <p className="text-slate-400 text-lg">
-              Manage your impact, track donations, and connect with the community.
-           </p>
-        </div>
+      {/* LEFT: VISUALIZER (Hidden on mobile) */}
+      <div className="hidden lg:block w-1/2 h-screen sticky top-0 border-r border-slate-800">
+         <LiveImpactVisualizer />
       </div>
 
-      {/* RIGHT: AUTH FORM */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center p-8 lg:p-24 relative">
-         <Link href="/" className="absolute top-8 right-8 text-sm font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white">
-            Back to Home
-         </Link>
+      {/* RIGHT: FORM */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-16 relative overflow-hidden">
+        
+        {/* Background Glow */}
+        <div className="absolute top-[-20%] right-[-20%] w-[500px] h-[500px] bg-teal-500/10 rounded-full blur-[100px] pointer-events-none" />
 
-         <div className="max-w-md w-full mx-auto">
-            <div className="mb-10">
-               <div className="w-12 h-12 bg-gradient-to-tr from-teal-400 to-indigo-500 rounded-xl flex items-center justify-center text-white shadow-lg mb-6">
-                  <Sparkles className="w-6 h-6 fill-white" />
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-[420px] w-full relative z-10"
+        >
+          
+          <div className="mb-10">
+            <Link href="/" className="inline-flex items-center gap-2 mb-8 group">
+               <div className="w-8 h-8 bg-gradient-to-tr from-teal-400 to-indigo-500 rounded-lg flex items-center justify-center text-white shadow-lg group-hover:rotate-12 transition-transform">
+                  <Sparkles className="w-4 h-4 fill-white" />
                </div>
-               <h2 className="text-3xl font-display font-bold text-slate-900 dark:text-white mb-2">Sign In</h2>
-               <p className="text-slate-500 dark:text-slate-400">Enter your credentials to access your account.</p>
+               <span className="font-bold text-lg text-slate-900 dark:text-white">helpio.</span>
+            </Link>
+            <h1 className="text-4xl font-display font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Welcome Back</h1>
+            <p className="text-slate-500 dark:text-slate-400 text-lg">Access your impact dashboard.</p>
+          </div>
+
+          {/* Social Auth */}
+          <button 
+             onClick={handleGoogleLogin}
+             className="w-full py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-3 font-bold text-slate-700 dark:text-white mb-6"
+          >
+             <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
+             Continue with Google
+          </button>
+
+          <div className="relative mb-6">
+             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200 dark:border-slate-800"></div></div>
+             <div className="relative flex justify-center text-xs uppercase"><span className="bg-slate-50 dark:bg-[#020617] px-2 text-slate-400 font-bold">Or with email</span></div>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div className="space-y-2">
+               <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 ml-1">Email</label>
+               <div className="relative group">
+                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-teal-500 transition-colors" />
+                 <input 
+                   type="email" 
+                   className="w-full pl-12 pr-4 py-4 rounded-xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 focus:border-teal-500 dark:focus:border-teal-500 focus:ring-0 outline-none transition-all font-bold text-slate-900 dark:text-white placeholder:font-medium"
+                   placeholder="name@example.com"
+                   onChange={(e) => setFormData({...formData, email: e.target.value})}
+                   required
+                 />
+               </div>
             </div>
 
-            <div className="space-y-6">
-               {/* GOOGLE BUTTON */}
-               <button 
-                  onClick={handleGoogleLogin}
-                  className="w-full py-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-3 font-bold text-slate-700 dark:text-white relative group overflow-hidden"
-               >
-                  <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5 relative z-10" alt="Google" />
-                  <span className="relative z-10">Sign in with Google</span>
-               </button>
-
-               <div className="relative">
-                  <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200 dark:border-slate-800"></div></div>
-                  <div className="relative flex justify-center text-xs uppercase"><span className="bg-white dark:bg-[#020617] px-2 text-slate-400 font-bold">Or with email</span></div>
+            <div className="space-y-2">
+               <div className="flex justify-between items-center ml-1">
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Password</label>
+                  <Link href="/forgot-password" className="text-xs font-bold text-indigo-500 hover:underline">Forgot?</Link>
                </div>
-
-               <form onSubmit={handleLogin} className="space-y-4">
-                  {/* Email Input */}
-                  <div className="space-y-2">
-                     <label className="text-xs font-bold text-slate-700 dark:text-slate-300 ml-1">Email Address</label>
-                     <div className="relative">
-                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                        <input 
-                           type="email" 
-                           placeholder="name@example.com"
-                           value={formData.email}
-                           onChange={(e) => setFormData({...formData, email: e.target.value})}
-                           className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium dark:text-white transition-all"
-                           required
-                        />
-                     </div>
-                  </div>
-
-                  {/* Password Input */}
-                  <div className="space-y-2">
-                     <div className="flex justify-between items-center ml-1">
-                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Password</label>
-                        <Link href="/forgot-password" className="text-xs font-bold text-teal-600 hover:underline">
-                           Forgot password?
-                        </Link>
-                     </div>
-                     <div className="relative">
-                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                        <input 
-                           type={showPassword ? "text" : "password"}
-                           placeholder="••••••••"
-                           value={formData.password}
-                           onChange={(e) => setFormData({...formData, password: e.target.value})}
-                           className="w-full pl-12 pr-12 py-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium dark:text-white transition-all"
-                           required
-                        />
-                        <button 
-                           type="button"
-                           onClick={() => setShowPassword(!showPassword)}
-                           className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                        >
-                           {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                        </button>
-                     </div>
-                  </div>
-
-                  <button 
-                     disabled={isLoading}
-                     className="w-full py-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed mt-2"
-                  >
-                     {isLoading ? 'Signing In...' : 'Sign In'} <ArrowRight className="w-4 h-4" />
-                  </button>
-               </form>
+               <div className="relative group">
+                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-teal-500 transition-colors" />
+                 <input 
+                   type="password" 
+                   className="w-full pl-12 pr-4 py-4 rounded-xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 focus:border-teal-500 dark:focus:border-teal-500 focus:ring-0 outline-none transition-all font-bold text-slate-900 dark:text-white placeholder:font-medium"
+                   placeholder="••••••••"
+                   onChange={(e) => setFormData({...formData, password: e.target.value})}
+                   required
+                 />
+               </div>
             </div>
-            
-            <p className="text-center text-xs text-slate-400 mt-8">
-               No account? <Link href="/signup" className="underline hover:text-slate-900 dark:hover:text-white font-bold">Create one</Link>.
-            </p>
-         </div>
+
+            <button 
+              disabled={loading} 
+              className="w-full py-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-6 disabled:opacity-70 disabled:cursor-not-allowed group"
+            >
+               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Sign In <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></>}
+            </button>
+          </form>
+
+          <p className="text-center text-sm text-slate-500 mt-8">
+             New here? <Link href="/signup" className="font-bold text-teal-600 hover:underline">Create an account</Link>
+          </p>
+        </motion.div>
       </div>
     </div>
   );
