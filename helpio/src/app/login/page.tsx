@@ -2,14 +2,17 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, ArrowRight, Github, Mail, ShieldCheck } from 'lucide-react';
+import { Sparkles, ArrowRight, Mail, ShieldCheck, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase'; // Ensure this exists from previous steps
+import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSent, setIsSent] = useState(false);
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,59 +26,52 @@ export default function LoginPage() {
       },
     });
 
-    if (!error) {
+    if (error) {
+      toast.error(error.message);
+    } else {
       setIsSent(true);
+      toast.success('Check your email for the magic link!');
     }
     setIsLoading(false);
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'github') => {
-    await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
+  const handleGoogleLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        },
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to initiate Google login');
+    }
   };
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#020617] flex">
       
-      {/* === LEFT: VISUAL SIDE (Hidden on mobile) === */}
+      {/* LEFT: VISUAL SIDE */}
       <div className="hidden lg:flex w-1/2 bg-slate-900 relative overflow-hidden items-center justify-center p-16">
-        {/* Background Visuals */}
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=1600')] bg-cover bg-center opacity-20" />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
         
         <div className="relative z-10 max-w-lg">
            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 border border-teal-500/30 text-teal-300 text-xs font-bold uppercase tracking-widest mb-6">
-              <Sparkles className="w-4 h-4" /> User Impact
+              <Sparkles className="w-4 h-4" /> Secure Access
            </div>
            <h1 className="text-5xl font-display font-bold text-white mb-6 leading-tight">
-              "I funded a classroom in rural India from my couch."
+              Welcome back to the future of giving.
            </h1>
-           <p className="text-xl text-slate-300 mb-8">
-              Join 12,000+ donors who are rewriting the rules of philanthropy. Transparent, direct, and fee-free.
-           </p>
-           
-           <div className="flex items-center gap-4">
-              <div className="flex -space-x-3">
-                 {[1,2,3].map(i => (
-                    <img key={i} src={`https://i.pravatar.cc/100?u=${i+20}`} className="w-12 h-12 rounded-full border-2 border-slate-900" />
-                 ))}
-              </div>
-              <div className="text-white">
-                 <p className="font-bold">Trusted Community</p>
-                 <div className="flex items-center gap-1 text-xs text-slate-400">
-                    <ShieldCheck className="w-3 h-3 text-emerald-500" /> 100% Verified
-                 </div>
-              </div>
-           </div>
         </div>
       </div>
 
-
-      {/* === RIGHT: AUTH FORM === */}
+      {/* RIGHT: AUTH FORM */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center p-8 lg:p-24 relative">
          <Link href="/" className="absolute top-8 right-8 text-sm font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white">
             Back to Home
@@ -86,8 +82,8 @@ export default function LoginPage() {
                <div className="w-12 h-12 bg-gradient-to-tr from-teal-400 to-indigo-500 rounded-xl flex items-center justify-center text-white shadow-lg mb-6">
                   <Sparkles className="w-6 h-6 fill-white" />
                </div>
-               <h2 className="text-3xl font-display font-bold text-slate-900 dark:text-white mb-2">Welcome back</h2>
-               <p className="text-slate-500 dark:text-slate-400">Enter your details to access your secure account.</p>
+               <h2 className="text-3xl font-display font-bold text-slate-900 dark:text-white mb-2">Sign In</h2>
+               <p className="text-slate-500 dark:text-slate-400">Access your dashboard securely.</p>
             </div>
 
             {isSent ? (
@@ -105,19 +101,13 @@ export default function LoginPage() {
                </motion.div>
             ) : (
                <div className="space-y-6">
+                  {/* GOOGLE BUTTON */}
                   <button 
-                     onClick={() => handleSocialLogin('google')}
-                     className="w-full py-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-3 font-bold text-slate-700 dark:text-white"
+                     onClick={handleGoogleLogin}
+                     className="w-full py-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-3 font-bold text-slate-700 dark:text-white relative group overflow-hidden"
                   >
-                     <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
-                     Continue with Google
-                  </button>
-                  <button 
-                     onClick={() => handleSocialLogin('github')}
-                     className="w-full py-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-3 font-bold text-slate-700 dark:text-white"
-                  >
-                     <Github className="w-5 h-5" />
-                     Continue with GitHub
+                     <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5 relative z-10" alt="Google" />
+                     <span className="relative z-10">Continue with Google</span>
                   </button>
 
                   <div className="relative">
@@ -148,7 +138,7 @@ export default function LoginPage() {
             )}
             
             <p className="text-center text-xs text-slate-400 mt-8">
-               By continuing, you agree to our <Link href="/terms" className="underline hover:text-slate-900 dark:hover:text-white">Terms</Link> and <Link href="/privacy" className="underline hover:text-slate-900 dark:hover:text-white">Privacy Policy</Link>.
+               No account? <Link href="/signup" className="underline hover:text-slate-900 dark:hover:text-white font-bold">Create one</Link>.
             </p>
          </div>
       </div>
