@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { useLocalization } from '@/context/LocalizationContext';
 import CheckoutForm from '@/components/features/CheckoutForm';
 import { toast } from 'sonner';
-import { countries } from 'country-list-json'; // FIXED IMPORT
+import { countries } from 'country-list-json'; 
 
 // Load Stripe outside component render
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
