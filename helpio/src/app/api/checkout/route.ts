@@ -1,7 +1,17 @@
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { PrismaClient } from '@prisma/client';
+import { rateLimit, RateLimitResponse } from '@/lib/rate-limit';
+import { headers } from 'next/headers';
 
+export async function POST(request: Request) {
+  const ip = headers().get('x-forwarded-for') || '127.0.0.1';
+  
+  // Allow max 5 payment attempts per minute per IP
+  if (!rateLimit(ip, 5)) {
+    return RateLimitResponse();
+  }
+  
 const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
