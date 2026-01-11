@@ -1,64 +1,66 @@
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
-import { PrismaClient } from '@prisma/client';
-import { rateLimit, RateLimitResponse } from '@/lib/rate-limit';
+import { checkoutSchema } from '@/lib/validations';
+import { calculateTax } from '@/lib/tax';
+import { rateLimit, RateLimitResponse } from '@/lib/rate-limit'; // From previous step
 import { headers } from 'next/headers';
 
 export async function POST(request: Request) {
-  const ip = headers().get('x-forwarded-for') || '127.0.0.1';
-  
-  // Allow max 5 payment attempts per minute per IP
-  if (!rateLimit(ip, 5)) {
-    return RateLimitResponse();
-  }
-  
-const prisma = new PrismaClient();
-
-export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { amount, tipAmount, wishId, userId, type } = body; 
-    // Type can be 'DONATION' or 'VERIFICATION_FEE'
-
-    // 1. Calculate Total (in cents for Stripe)
-    // If it's a verification fee, amount is fixed (e.g., $1.00)
-    // If it's a donation, it's Base + Tip
-    
-    let totalAmount = 0;
-    let metadata = {};
-
-    if (type === 'VERIFICATION_FEE') {
-       totalAmount = 100; // $1.00 = 100 cents
-       metadata = { type: 'VERIFICATION_FEE', wishId, userId };
-    } else {
-       // Donation Logic
-       const base = parseFloat(amount) * 100;
-       const tip = parseFloat(tipAmount || '0') * 100;
-       totalAmount = Math.round(base + tip);
-       
-       metadata = { 
-         type: 'DONATION', 
-         wishId, 
-         userId, 
-         donationAmount: base, 
-         tipAmount: tip 
-       };
+    // 1. SECURITY: Rate Limiting
+    const ip = headers().get('x-forwarded-for') || '127.0.0.1';
+    if (!rateLimit(ip, 5)) { // Max 5 attempts per minute
+      return RateLimitResponse();
     }
 
-    // 2. Create Stripe Payment Intent
+    const body = await request.json();
+
+    // 2. SECURITY: Input Validation (Zod)
+    const validation = checkoutSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json({ error: "Invalid payment data", details: validation.error.format() }, { status: 400 });
+    }
+
+    const { amount, tipAmount, country, wishId, isAnonymous } = validation.data;
+
+    // 3. LOGIC: Server-Side Calculation (The Source of Truth)
+    // We never trust the 'total' sent from frontend. We recalculate it.
+    
+    // Tax Logic: Usually tax applies to the Service/Tip or Goods. 
+    // For this hybrid model, we'll apply tax to the whole transaction for safety, 
+    // or you can change this to `calculateTax(tipAmount, country)` if donations are tax-exempt.
+    const tax = calculateTax(amount + tipAmount, country);
+    
+    const totalAmount = Math.round((amount + tipAmount + tax) * 100); // Convert to cents
+
+    // 4. STRIPE: Create Secure Payment Intent
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalAmount,
       currency: 'usd',
       automatic_payment_methods: { enabled: true },
-      metadata: metadata, // Important: This lets us track what the money was for later via Webhooks
+      metadata: {
+        wishId,
+        baseAmount: amount,
+        tipAmount: tipAmount,
+        taxAmount: tax,
+        country,
+        isAnonymous: isAnonymous ? 'true' : 'false',
+        ip_hash: Buffer.from(ip).toString('base64').substring(0, 10) // Security Audit Trail
+      },
     });
 
     return NextResponse.json({ 
-      clientSecret: paymentIntent.client_secret 
+      clientSecret: paymentIntent.client_secret,
+      breakdown: {
+        amount,
+        tip: tipAmount,
+        tax,
+        total: totalAmount / 100
+      }
     });
 
   } catch (error) {
-    console.error('Stripe Error:', error);
-    return NextResponse.json({ error: 'Payment initialization failed' }, { status: 500 });
+    console.error('Payment Security Error:', error);
+    return NextResponse.json({ error: 'Secure transaction initialization failed' }, { status: 500 });
   }
 }
