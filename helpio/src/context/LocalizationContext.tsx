@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { countries } from 'country-list-json'; // FIXED IMPORT
+import { countries } from 'country-list-json'; 
 
 // In a real production app, you should fetch live rates from an API (e.g., OpenExchangeRates).
 // For this hybrid model, we use estimated parity rates.
