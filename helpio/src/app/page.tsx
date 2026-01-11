@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, Sparkles, CheckCircle2, Heart, Gift } from 'lucide-react';
+import { ArrowRight, Sparkles, CheckCircle2, Gift, HeartHandshake, Plus } from 'lucide-react';
+import Link from 'next/link';
 
 // Import Sections
 import WishFeed from '@/components/sections/WishFeed';
@@ -10,10 +11,8 @@ import Leaderboard from '@/components/sections/Leaderboard';
 import HowItWorks from '@/components/sections/HowItWorks';
 import AboutUs from '@/components/sections/AboutUs';
 import OurImpact from '@/components/sections/OurImpact';
-import CreateWishModal from '@/components/features/CreateWishModal';
 
 export default function Home() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -76,16 +75,21 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
-              <button 
-                onClick={() => setIsModalOpen(true)}
-                className="w-full sm:w-auto px-8 py-4 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-lg hover:translate-y-[-2px] hover:shadow-xl transition-all"
+              {/* PRIMARY ACTION: Grant a Wish (Redirect to Catalogue) */}
+              <Link 
+                href="/wishes"
+                className="w-full sm:w-auto px-8 py-4 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-lg hover:translate-y-[-2px] hover:shadow-xl transition-all flex items-center justify-center gap-2"
               >
-                Start Granting
-              </button>
-              <button className="w-full sm:w-auto px-8 py-4 rounded-full border border-slate-300 dark:border-slate-700 bg-transparent text-slate-900 dark:text-white font-bold text-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
+                <HeartHandshake className="w-5 h-5" /> Start Granting
+              </Link>
+
+              {/* SECONDARY ACTION: Make a Wish (Redirect to Creation Studio) */}
+              <Link 
+                href="/create"
+                className="w-full sm:w-auto px-8 py-4 rounded-full border border-slate-300 dark:border-slate-700 bg-transparent text-slate-900 dark:text-white font-bold text-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
               >
-                How it works <ArrowRight className="w-5 h-5" />
-              </button>
+                <Plus className="w-5 h-5" /> Make a Wish
+              </Link>
             </div>
             
             {/* Social Proof Mini-Section */}
@@ -189,7 +193,6 @@ export default function Home() {
         <OurImpact />
       </div>
 
-      <CreateWishModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </main>
   );
 }
