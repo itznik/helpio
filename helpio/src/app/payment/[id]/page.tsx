@@ -1,23 +1,25 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
-import { ArrowLeft, ShieldCheck, Heart, Info, Lock, Globe, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, Heart, Info, Lock, Globe } from 'lucide-react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation'; // FIX 1: Import useParams
 import { useLocalization } from '@/context/LocalizationContext';
 import CheckoutForm from '@/components/features/CheckoutForm';
 import { toast } from 'sonner';
 import { countries } from 'country-list-json'; 
 
-// Load Stripe outside component render
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
-export default function SecureCheckoutPage({ params }: { params: { id: string } }) {
-  // 1. Get Global Context
-  const { countryCode, currencyCode, exchangeRate, formatPrice, setCountryOverride } = useLocalization();
+export default function SecureCheckoutPage() {
+  // FIX 2: Get ID safely using the hook
+  const params = useParams();
+  const wishId = params?.id as string;
 
-  // 2. Local State
+  const { countryCode, exchangeRate, formatPrice, setCountryOverride } = useLocalization();
+
   const [donationInput, setDonationInput] = useState<string>('50'); 
   const [tipPercentage, setTipPercentage] = useState(15);
   const [customTip, setCustomTip] = useState('');
@@ -25,18 +27,16 @@ export default function SecureCheckoutPage({ params }: { params: { id: string } 
   const [isLoading, setIsLoading] = useState(false);
   const [serverBreakdown, setServerBreakdown] = useState<any>(null);
 
-  // 3. Calculations
   const donationBase = parseFloat(donationInput) || 0;
   const tipAmount = customTip ? parseFloat(customTip) : (donationBase * tipPercentage) / 100;
-  
-  // Tax Logic: Simplified 5% check for non-US
   const estTax = countryCode !== 'US' ? (donationBase + tipAmount) * 0.05 : 0; 
   const totalUSD = donationBase + tipAmount + estTax;
 
-  // 4. Secure Handshake (Debounced to reduce API Spam)
   useEffect(() => {
     const initSecureTransaction = async () => {
-      if (donationBase <= 0) return;
+      // FIX 3: Check for wishId existence
+      if (donationBase <= 0 || !wishId) return;
+      
       setIsLoading(true);
       
       try {
@@ -47,7 +47,7 @@ export default function SecureCheckoutPage({ params }: { params: { id: string } 
             amount: donationBase, 
             tipAmount: tipAmount,
             country: countryCode,
-            wishId: params.id,
+            wishId: wishId, // FIX 4: Use the string ID
             isAnonymous: false 
           }),
         });
@@ -62,20 +62,19 @@ export default function SecureCheckoutPage({ params }: { params: { id: string } 
         setServerBreakdown(data.breakdown);
       } catch (error) {
         console.error(error);
+        toast.error("Could not initialize payment");
       } finally {
         setIsLoading(false);
       }
     };
 
-    // Wait 600ms after user stops typing
     const timeout = setTimeout(initSecureTransaction, 600);
     return () => clearTimeout(timeout);
-  }, [donationBase, tipAmount, countryCode, params.id]); // Dependencies for re-fetch
+  }, [donationBase, tipAmount, countryCode, wishId]); // FIX 5: Update dependency
 
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-[#020617] flex items-center justify-center p-4 md:p-8">
       
-      {/* Visual Header */}
       <div className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-500 via-indigo-500 to-teal-500 animate-gradient" />
       
       <Link href="/wishes" className="fixed top-8 left-8 flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors font-bold z-50">
@@ -87,7 +86,6 @@ export default function SecureCheckoutPage({ params }: { params: { id: string } 
         {/* LEFT COLUMN: Inputs */}
         <div className="lg:col-span-7 space-y-6">
            
-           {/* Country Selector (Full List) */}
            <div className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-lg border border-slate-100 dark:border-slate-800">
               <div className="flex items-center justify-between mb-6">
                  <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -113,7 +111,6 @@ export default function SecureCheckoutPage({ params }: { params: { id: string } 
               </select>
            </div>
 
-           {/* Amount Input */}
            <div className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-lg border border-slate-100 dark:border-slate-800">
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Contribution (USD)</h3>
               
@@ -132,7 +129,6 @@ export default function SecureCheckoutPage({ params }: { params: { id: string } 
                  </p>
               </div>
 
-              {/* Tipping */}
               <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800">
                   <div className="flex justify-between items-center mb-4">
                       <span className="font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
@@ -193,7 +189,6 @@ export default function SecureCheckoutPage({ params }: { params: { id: string } 
                 </div>
              </div>
 
-             {/* Stripe Element Container */}
              <div className="relative min-h-[200px]">
                 {!clientSecret || isLoading ? (
                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-xl z-10">
