@@ -11,7 +11,8 @@ import { User } from '@supabase/supabase-js';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileOpen] = useState(false);
+  // FIX: Renamed variable from isMobileMenuOpen to isMobileOpen to match usage
+  const [isMobileOpen, setIsMobileOpen] = useState(false); 
   const [user, setUser] = useState<User | null>(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const router = useRouter();
