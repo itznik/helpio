@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { useLocalization } from '@/context/LocalizationContext';
 import CheckoutForm from '@/components/features/CheckoutForm';
 import { toast } from 'sonner';
-import countryList from 'country-list-json'; 
+import { countries } from 'country-list-json'; // FIXED IMPORT
 
 // Load Stripe outside component render
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
@@ -18,7 +18,7 @@ export default function SecureCheckoutPage({ params }: { params: { id: string } 
   const { countryCode, currencyCode, exchangeRate, formatPrice, setCountryOverride } = useLocalization();
 
   // 2. Local State
-  const [donationInput, setDonationInput] = useState<string>('50'); // Keep input in USD for logic simplicity, or convert base. Let's assume input is USD base.
+  const [donationInput, setDonationInput] = useState<string>('50'); 
   const [tipPercentage, setTipPercentage] = useState(15);
   const [customTip, setCustomTip] = useState('');
   const [clientSecret, setClientSecret] = useState('');
@@ -105,7 +105,7 @@ export default function SecureCheckoutPage({ params }: { params: { id: string } 
                 onChange={(e) => setCountryOverride(e.target.value)}
                 className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 font-bold text-lg focus:ring-2 focus:ring-indigo-500 outline-none"
               >
-                 {(countryList as any[]).map((c: any) => (
+                 {(countries as any[]).map((c: any) => (
                     <option key={c.code} value={c.code}>
                        {c.name}
                     </option>
