@@ -3,7 +3,6 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
   // 1. Initialize Response
-  // We need to create a response object first to attach cookies and headers to it
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -16,60 +15,42 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value;
+        getAll() {
+          return request.cookies.getAll();
         },
-        set(name: string, value: string, options: CookieOptions) {
-          // Keep the cookie in the request for the current execution
-          request.cookies.set({ name, value, ...options });
-          // Update the response so the cookie persists
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            request.cookies.set(name, value);
+          });
           response = NextResponse.next({
             request: {
               headers: request.headers,
             },
           });
-          response.cookies.set({ name, value, ...options });
-        },
-        remove(name: string, options: CookieOptions) {
-          request.cookies.set({ name, value: '', ...options });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
+          cookiesToSet.forEach(({ name, value, options }) => {
+            response.cookies.set(name, value, options);
           });
-          response.cookies.set({ name, value: '', ...options });
         },
       },
     }
   );
 
   // 3. Refresh Session
-  // This updates the session if it's expired
   const { data: { user } } = await supabase.auth.getUser();
 
   // 4. Route Protection Logic
   const isAuthRoute = request.nextUrl.pathname.startsWith('/dashboard') || request.nextUrl.pathname.startsWith('/create');
 
   if (isAuthRoute && !user) {
-    // Redirect unauthenticated users to login
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = '/login';
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-  // Fetch user role from Metadata (Supabase stores roles in user_metadata or app_metadata)
-  const role = user.user_metadata?.role || 'USER';
-
-  if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {
-     // Kick them out to dashboard if they are not admin
-     return NextResponse.redirect(new URL('/dashboard', request.url));
-  }
-  // 5. Geo-Detection & Security Headers (Preserving your previous logic)
+  // 5. Geo-Detection & Security Headers
   const country = request.geo?.country || 'US';
   response.headers.set('x-user-country', country);
   
-  // Security Headers
   response.headers.set('X-DNS-Prefetch-Control', 'on');
   response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
   response.headers.set('X-Frame-Options', 'SAMEORIGIN');
@@ -81,7 +62,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Apply to all routes except static files and images
     '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };
