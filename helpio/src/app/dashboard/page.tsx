@@ -15,7 +15,9 @@ import {
 
 export default async function DashboardOverview() {
   // 1. Initialize Supabase Server Client
-  const cookieStore = cookies();
+  // FIX: cookies() is async in Next.js 15+, so we must await it.
+  const cookieStore = await cookies();
+  
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
