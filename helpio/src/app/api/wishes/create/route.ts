@@ -1,7 +1,19 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase'; // Assuming you set this up in previous step
 import { PrismaClient } from '@prisma/client';
+import { wishSchema } from '@/lib/validations';
 
+export async function POST(request: Request) {
+  const body = await request.json();
+
+  // 1. Validate Data
+  const validation = wishSchema.safeParse(body);
+  
+  if (!validation.success) {
+    return NextResponse.json({ error: validation.error.format() }, { status: 400 });
+  }
+  const { title, amount, description } = validation.data; // Use sanitized data
+  
 const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
