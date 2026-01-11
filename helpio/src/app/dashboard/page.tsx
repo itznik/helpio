@@ -2,7 +2,46 @@
 
 import { motion } from 'framer-motion';
 import { TrendingUp, Package, Clock, ArrowUpRight, CheckCircle2 } from 'lucide-react';
+import { getCurrentUserRole } from '@/lib/auth-utils'; // You built this earlier
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+import { PrismaClient } from '@prisma/client';
 
+const prisma = new PrismaClient();
+
+async function getData() {
+  const cookieStore = cookies();
+  const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+      cookies: { get(name){ return cookieStore.get(name)?.value } }
+  });
+  
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return null;
+
+  // 1. Fetch User Stats
+  const donations = await prisma.donation.findMany({
+    where: { donorId: session.user.id },
+    include: { wish: true },
+    orderBy: { createdAt: 'desc' },
+    take: 5
+  });
+
+  const totalDonated = await prisma.donation.aggregate({
+    where: { donorId: session.user.id },
+    _sum: { amountTotal: true }
+  });
+
+  return { 
+    user: session.user, 
+    donations, 
+    totalDonated: totalDonated._sum.amountTotal || 0 
+  };
+}
+
+export default async function DashboardOverview() {
+  const data = await getData();
+  if (!data) return null; // Or redirect
+  
 // Mock User Data
 const USER = {
   name: "Nikunj",
