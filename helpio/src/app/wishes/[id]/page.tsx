@@ -1,29 +1,35 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Share2, Copy, Check, Heart, User, Clock, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Share2, Copy, Heart, User, Clock, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation'; // FIX 1: Import useParams
 import { createBrowserClient } from '@supabase/ssr';
 import { toast } from 'sonner';
 
-export default function WishDetailsPage({ params }: { params: { id: string } }) {
+export default function WishDetailsPage() {
+  // FIX 2: Use hook
+  const params = useParams();
+  const wishId = params?.id as string;
+  
   const [wish, setWish] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Initialize Supabase
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
   useEffect(() => {
+    // FIX 3: Guard clause
+    if (!wishId) return;
+
     const fetchWish = async () => {
       const { data, error } = await supabase
         .from('Wish')
         .select(`*, user:User(*)`)
-        .eq('id', params.id)
+        .eq('id', wishId) // FIX 4: Use wishId
         .single();
 
       if (error) {
@@ -36,7 +42,7 @@ export default function WishDetailsPage({ params }: { params: { id: string } }) 
     };
 
     fetchWish();
-  }, [params.id, router, supabase]);
+  }, [wishId, router, supabase]);
 
   const handleShare = async () => {
     if (!wish) return;
@@ -44,20 +50,18 @@ export default function WishDetailsPage({ params }: { params: { id: string } }) 
     const shareData = {
       title: `Help grant a wish: ${wish.title}`,
       text: `I found this on Helpio. ${wish.user?.fullName || 'Someone'} needs our help!`,
-      url: window.location.href, // This captures the current dynamic URL
+      url: window.location.href,
     };
 
-    // 1. Try Native Share (Mobile)
     if (navigator.share) {
       try {
         await navigator.share(shareData);
         return;
       } catch (err) {
-        // User cancelled share dialog, safe to ignore
+        // user cancelled
       }
     }
 
-    // 2. Fallback to Clipboard (Desktop)
     try {
       await navigator.clipboard.writeText(window.location.href);
       toast.success("Link copied to clipboard!", {
@@ -68,7 +72,7 @@ export default function WishDetailsPage({ params }: { params: { id: string } }) 
     }
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center text-slate-500">Loading Wish...</div>;
 
   const progress = (wish.raisedAmount / wish.goalAmount) * 100;
 
