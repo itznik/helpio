@@ -3,27 +3,53 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, LogIn, UserPlus, Sparkles } from 'lucide-react';
+import { Menu, X, LogIn, UserPlus, Sparkles, User as UserIcon, LayoutDashboard, LogOut } from 'lucide-react';
 import { ThemeToggle } from '@/components/shared/ThemeToggle';
+import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
+import { User } from '@supabase/supabase-js';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const router = useRouter();
 
-  // Detect scroll to change navbar style
+  // Scroll Detection
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Auth State Listener (Real-time)
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+    };
+    getUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setIsProfileOpen(false);
+    router.push('/');
+    router.refresh();
+  };
+
   const navLinks = [
-    { name: 'How it Works', href: '/#how-it-works' }, // Added / for home anchor
-  { name: 'Browse Wishes', href: '/wishes' },       // NEW PAGE LINK
-  { name: 'Leaderboard', href: '/#leaderboard' },   // Added / for home anchor
-  { name: 'Stories', href: '/stories' },         // NEW PAGE LINK
+    { name: 'How it Works', href: '/#how-it-works' },
+    { name: 'Browse Wishes', href: '/wishes' },
+    { name: 'Leaderboard', href: '/#leaderboard' },
+    { name: 'Stories', href: '/stories' },
   ];
 
   return (
@@ -62,67 +88,75 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* ACTIONS (Theme + Auth) */}
+          {/* ACTIONS */}
           <div className="hidden md:flex items-center gap-4">
             <ThemeToggle />
-            
             <div className="h-6 w-px bg-slate-200 dark:bg-slate-800" />
             
-            <button className="flex items-center gap-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
-              <LogIn className="w-4 h-4" />
-              Login
-            </button>
-            
-            <button className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-bold hover:scale-105 hover:shadow-lg transition-all">
-              <UserPlus className="w-4 h-4" />
-              Sign Up
-            </button>
+            {user ? (
+              <div className="relative">
+                <button 
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="flex items-center gap-2 pl-2 pr-4 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                >
+                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-400 to-indigo-500 p-0.5">
+                      <img 
+                        src={user.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${user.email}&background=random`} 
+                        alt="Profile" 
+                        className="w-full h-full rounded-full object-cover border-2 border-white dark:border-slate-900" 
+                      />
+                   </div>
+                   <span className="text-sm font-bold text-slate-700 dark:text-slate-200 max-w-[100px] truncate">
+                      {user.user_metadata.full_name || user.email?.split('@')[0]}
+                   </span>
+                </button>
+
+                {/* Dropdown Menu */}
+                <AnimatePresence>
+                  {isProfileOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden p-2"
+                    >
+                       <Link href="/dashboard" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-bold text-slate-700 dark:text-slate-300">
+                          <LayoutDashboard className="w-4 h-4" /> Dashboard
+                       </Link>
+                       <Link href="/dashboard/settings" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-bold text-slate-700 dark:text-slate-300">
+                          <UserIcon className="w-4 h-4" /> Profile
+                       </Link>
+                       <div className="h-px bg-slate-100 dark:bg-slate-800 my-1" />
+                       <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 text-sm font-bold text-red-600 dark:text-red-400">
+                          <LogOut className="w-4 h-4" /> Sign Out
+                       </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <>
+                <Link href="/login" className="flex items-center gap-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
+                  <LogIn className="w-4 h-4" />
+                  Login
+                </Link>
+                <Link href="/signup" className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-bold hover:scale-105 hover:shadow-lg transition-all">
+                  <UserPlus className="w-4 h-4" />
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
 
-          {/* MOBILE MENU TOGGLE */}
+          {/* MOBILE TOGGLE */}
           <div className="flex items-center gap-4 md:hidden">
-            <ThemeToggle />
-            <button 
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 text-slate-600 dark:text-slate-300"
-            >
-              {isMobileMenuOpen ? <X /> : <Menu />}
-            </button>
+             <ThemeToggle />
+             <button onClick={() => setIsMobileOpen(!isMobileOpen)} className="p-2 text-slate-600 dark:text-slate-300">
+               {isMobileOpen ? <X /> : <Menu />}
+             </button>
           </div>
         </div>
       </motion.nav>
-
-      {/* MOBILE MENU OVERLAY */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="fixed top-[70px] left-0 right-0 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 z-40 overflow-hidden md:hidden shadow-xl"
-          >
-            <div className="p-6 space-y-4">
-              {navLinks.map((link) => (
-                <Link 
-                  key={link.name} 
-                  href={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block text-lg font-bold text-slate-900 dark:text-white py-2"
-                >
-                  {link.name}
-                </Link>
-              ))}
-              <hr className="border-slate-100 dark:border-slate-800 my-4" />
-              <button className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-slate-200 dark:border-slate-700 font-bold text-slate-900 dark:text-white">
-                <LogIn className="w-4 h-4" /> Login
-              </button>
-              <button className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-teal-600 text-white font-bold shadow-lg">
-                <UserPlus className="w-4 h-4" /> Sign Up
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }
