@@ -3,28 +3,32 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, LogIn, UserPlus, Sparkles, User as UserIcon, LayoutDashboard, LogOut } from 'lucide-react';
+import { 
+  Menu, X, LogIn, UserPlus, Sparkles, 
+  User as UserIcon, LayoutDashboard, LogOut, 
+  ChevronRight, Home, Heart, BookOpen, Trophy
+} from 'lucide-react';
 import { ThemeToggle } from '@/components/shared/ThemeToggle';
 import { supabase } from '@/lib/supabase';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation'; // Added usePathname
 import { User } from '@supabase/supabase-js';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  // FIX: Renamed variable from isMobileMenuOpen to isMobileOpen to match usage
-  const [isMobileOpen, setIsMobileOpen] = useState(false); 
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname(); // To close menu on navigation
 
-  // Scroll Detection
+  // 1. Scroll Detection
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Auth State Listener (Real-time)
+  // 2. Auth State Listener
   useEffect(() => {
     const getUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -34,23 +38,33 @@ export default function Navbar() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      if (_event === 'SIGNED_IN' || _event === 'SIGNED_OUT') {
+        setIsProfileOpen(false);
+        setIsMobileOpen(false);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
+  // 3. Close mobile menu when route changes
+  useEffect(() => {
+    setIsMobileOpen(false);
+  }, [pathname]);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setIsProfileOpen(false);
+    setIsMobileOpen(false);
     router.push('/');
     router.refresh();
   };
 
-  const navLinks = [
-    { name: 'How it Works', href: '/#how-it-works' },
-    { name: 'Browse Wishes', href: '/wishes' },
-    { name: 'Leaderboard', href: '/#leaderboard' },
-    { name: 'Stories', href: '/stories' },
+  const NAV_LINKS = [
+    { name: 'Home', href: '/', icon: Home },
+    { name: 'Browse Wishes', href: '/wishes', icon: SearchIcon }, // Helper below
+    { name: 'Leaderboard', href: '/#leaderboard', icon: Trophy },
+    { name: 'Stories', href: '/stories', icon: BookOpen },
   ];
 
   return (
@@ -59,15 +73,15 @@ export default function Navbar() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled 
-            ? 'py-4 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md shadow-sm border-b border-slate-200/50 dark:border-slate-800/50' 
+          isScrolled || isMobileOpen
+            ? 'py-4 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl shadow-sm border-b border-slate-200/50 dark:border-slate-800/50' 
             : 'py-6 bg-transparent'
         }`}
       >
         <div className="container mx-auto px-6 flex items-center justify-between">
           
           {/* LOGO */}
-          <Link href="/" className="flex items-center gap-2 group">
+          <Link href="/" className="flex items-center gap-2 group z-50 relative">
             <div className="w-10 h-10 bg-gradient-to-tr from-teal-400 to-indigo-500 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:rotate-12 transition-transform">
               <Sparkles className="w-6 h-6 fill-white" />
             </div>
@@ -78,7 +92,7 @@ export default function Navbar() {
 
           {/* DESKTOP LINKS */}
           <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
+            {NAV_LINKS.map((link) => (
               <Link 
                 key={link.name} 
                 href={link.href}
@@ -89,7 +103,7 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* ACTIONS */}
+          {/* DESKTOP ACTIONS */}
           <div className="hidden md:flex items-center gap-4">
             <ThemeToggle />
             <div className="h-6 w-px bg-slate-200 dark:bg-slate-800" />
@@ -112,7 +126,6 @@ export default function Navbar() {
                    </span>
                 </button>
 
-                {/* Dropdown Menu */}
                 <AnimatePresence>
                   {isProfileOpen && (
                     <motion.div
@@ -138,26 +151,125 @@ export default function Navbar() {
             ) : (
               <>
                 <Link href="/login" className="flex items-center gap-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
-                  <LogIn className="w-4 h-4" />
-                  Login
+                  <LogIn className="w-4 h-4" /> Login
                 </Link>
                 <Link href="/signup" className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-bold hover:scale-105 hover:shadow-lg transition-all">
-                  <UserPlus className="w-4 h-4" />
-                  Sign Up
+                  <UserPlus className="w-4 h-4" /> Sign Up
                 </Link>
               </>
             )}
           </div>
 
-          {/* MOBILE TOGGLE */}
-          <div className="flex items-center gap-4 md:hidden">
+          {/* MOBILE TOGGLE BUTTON */}
+          <div className="flex items-center gap-4 md:hidden z-50">
              <ThemeToggle />
-             <button onClick={() => setIsMobileOpen(!isMobileOpen)} className="p-2 text-slate-600 dark:text-slate-300">
-               {isMobileOpen ? <X /> : <Menu />}
+             <button 
+               onClick={() => setIsMobileOpen(!isMobileOpen)} 
+               className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white"
+             >
+               {isMobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
              </button>
           </div>
+
         </div>
+
+        {/* === MOBILE MENU OVERLAY === */}
+        <AnimatePresence>
+          {isMobileOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: '100vh' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="fixed inset-0 top-0 bg-white dark:bg-[#020617] z-40 md:hidden pt-24 px-6 overflow-y-auto"
+            >
+              <div className="flex flex-col gap-2">
+                
+                {/* Mobile Links */}
+                {NAV_LINKS.map((link, i) => (
+                  <motion.div
+                    key={link.name}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                  >
+                    <Link 
+                      href={link.href}
+                      className="flex items-center justify-between p-4 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-900 border border-transparent hover:border-slate-200 dark:hover:border-slate-800 group transition-all"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 group-hover:bg-teal-50 dark:group-hover:bg-teal-900/20 group-hover:text-teal-600 transition-colors">
+                           <link.icon className="w-5 h-5" />
+                        </div>
+                        <span className="text-lg font-bold text-slate-900 dark:text-white">{link.name}</span>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-teal-500" />
+                    </Link>
+                  </motion.div>
+                ))}
+
+                <div className="h-px bg-slate-100 dark:bg-slate-800 my-4" />
+
+                {/* Mobile Auth Actions */}
+                {user ? (
+                   <motion.div 
+                     initial={{ opacity: 0 }} 
+                     animate={{ opacity: 1 }}
+                     className="bg-slate-50 dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800"
+                   >
+                      <div className="flex items-center gap-4 mb-6">
+                         <img src={user.user_metadata.avatar_url} className="w-12 h-12 rounded-full border-2 border-white dark:border-slate-950" />
+                         <div>
+                            <p className="font-bold text-slate-900 dark:text-white">{user.user_metadata.full_name}</p>
+                            <p className="text-xs text-slate-500">{user.email}</p>
+                         </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                         <Link href="/dashboard" className="py-3 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-center font-bold text-sm">
+                            Dashboard
+                         </Link>
+                         <button onClick={handleLogout} className="py-3 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 text-center font-bold text-sm">
+                            Sign Out
+                         </button>
+                      </div>
+                   </motion.div>
+                ) : (
+                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col gap-3">
+                      <Link href="/login" className="w-full py-4 rounded-xl border border-slate-200 dark:border-slate-800 font-bold text-center text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-900">
+                         Log In
+                      </Link>
+                      <Link href="/signup" className="w-full py-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-center">
+                         Create Account
+                      </Link>
+                   </motion.div>
+                )}
+
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.nav>
     </>
   );
+}
+
+// Icon Helper
+function SearchIcon(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.3-4.3" />
+    </svg>
+  )
 }
