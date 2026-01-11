@@ -2,37 +2,37 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, ArrowRight, Mail, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Sparkles, ArrowRight, Lock, Mail, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
-  const [isSent, setIsSent] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Supabase Magic Link Login
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
+    // 1. SECURE PASSWORD LOGIN
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: formData.email,
+      password: formData.password,
     });
 
     if (error) {
       toast.error(error.message);
+      setIsLoading(false);
     } else {
-      setIsSent(true);
-      toast.success('Check your email for the magic link!');
+      toast.success('Welcome back!');
+      // 2. REFRESH ROUTER & REDIRECT
+      router.refresh();
+      router.push('/dashboard');
     }
-    setIsLoading(false);
   };
 
   const handleGoogleLogin = async () => {
@@ -68,6 +68,9 @@ export default function LoginPage() {
            <h1 className="text-5xl font-display font-bold text-white mb-6 leading-tight">
               Welcome back to the future of giving.
            </h1>
+           <p className="text-slate-400 text-lg">
+              Manage your impact, track donations, and connect with the community.
+           </p>
         </div>
       </div>
 
@@ -83,59 +86,77 @@ export default function LoginPage() {
                   <Sparkles className="w-6 h-6 fill-white" />
                </div>
                <h2 className="text-3xl font-display font-bold text-slate-900 dark:text-white mb-2">Sign In</h2>
-               <p className="text-slate-500 dark:text-slate-400">Access your dashboard securely.</p>
+               <p className="text-slate-500 dark:text-slate-400">Enter your credentials to access your account.</p>
             </div>
 
-            {isSent ? (
-               <motion.div 
-                 initial={{ opacity: 0, scale: 0.9 }}
-                 animate={{ opacity: 1, scale: 1 }}
-                 className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 p-6 rounded-2xl text-center"
+            <div className="space-y-6">
+               {/* GOOGLE BUTTON */}
+               <button 
+                  onClick={handleGoogleLogin}
+                  className="w-full py-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-3 font-bold text-slate-700 dark:text-white relative group overflow-hidden"
                >
-                  <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-600">
-                     <Mail className="w-6 h-6" />
-                  </div>
-                  <h3 className="font-bold text-slate-900 dark:text-white mb-1">Check your inbox</h3>
-                  <p className="text-sm text-slate-500 mb-4">We sent a magic link to <span className="font-bold">{email}</span></p>
-                  <button onClick={() => setIsSent(false)} className="text-xs font-bold text-emerald-600 hover:underline">Try different email</button>
-               </motion.div>
-            ) : (
-               <div className="space-y-6">
-                  {/* GOOGLE BUTTON */}
-                  <button 
-                     onClick={handleGoogleLogin}
-                     className="w-full py-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-3 font-bold text-slate-700 dark:text-white relative group overflow-hidden"
-                  >
-                     <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5 relative z-10" alt="Google" />
-                     <span className="relative z-10">Continue with Google</span>
-                  </button>
+                  <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5 relative z-10" alt="Google" />
+                  <span className="relative z-10">Sign in with Google</span>
+               </button>
 
-                  <div className="relative">
-                     <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200 dark:border-slate-800"></div></div>
-                     <div className="relative flex justify-center text-xs uppercase"><span className="bg-white dark:bg-[#020617] px-2 text-slate-400 font-bold">Or continue with email</span></div>
-                  </div>
+               <div className="relative">
+                  <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200 dark:border-slate-800"></div></div>
+                  <div className="relative flex justify-center text-xs uppercase"><span className="bg-white dark:bg-[#020617] px-2 text-slate-400 font-bold">Or with email</span></div>
+               </div>
 
-                  <form onSubmit={handleLogin} className="space-y-4">
-                     <div>
-                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300 ml-1 mb-1 block">Email Address</label>
+               <form onSubmit={handleLogin} className="space-y-4">
+                  {/* Email Input */}
+                  <div className="space-y-2">
+                     <label className="text-xs font-bold text-slate-700 dark:text-slate-300 ml-1">Email Address</label>
+                     <div className="relative">
+                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                         <input 
                            type="email" 
                            placeholder="name@example.com"
-                           value={email}
-                           onChange={(e) => setEmail(e.target.value)}
-                           className="w-full px-5 py-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium dark:text-white"
+                           value={formData.email}
+                           onChange={(e) => setFormData({...formData, email: e.target.value})}
+                           className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium dark:text-white transition-all"
                            required
                         />
                      </div>
-                     <button 
-                        disabled={isLoading}
-                        className="w-full py-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2 disabled:opacity-70"
-                     >
-                        {isLoading ? 'Sending Link...' : 'Sign In with Email'} <ArrowRight className="w-4 h-4" />
-                     </button>
-                  </form>
-               </div>
-            )}
+                  </div>
+
+                  {/* Password Input */}
+                  <div className="space-y-2">
+                     <div className="flex justify-between items-center ml-1">
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Password</label>
+                        <Link href="/forgot-password" className="text-xs font-bold text-teal-600 hover:underline">
+                           Forgot password?
+                        </Link>
+                     </div>
+                     <div className="relative">
+                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                        <input 
+                           type={showPassword ? "text" : "password"}
+                           placeholder="••••••••"
+                           value={formData.password}
+                           onChange={(e) => setFormData({...formData, password: e.target.value})}
+                           className="w-full pl-12 pr-12 py-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium dark:text-white transition-all"
+                           required
+                        />
+                        <button 
+                           type="button"
+                           onClick={() => setShowPassword(!showPassword)}
+                           className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                        >
+                           {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                     </div>
+                  </div>
+
+                  <button 
+                     disabled={isLoading}
+                     className="w-full py-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed mt-2"
+                  >
+                     {isLoading ? 'Signing In...' : 'Sign In'} <ArrowRight className="w-4 h-4" />
+                  </button>
+               </form>
+            </div>
             
             <p className="text-center text-xs text-slate-400 mt-8">
                No account? <Link href="/signup" className="underline hover:text-slate-900 dark:hover:text-white font-bold">Create one</Link>.
