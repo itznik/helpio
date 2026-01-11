@@ -1,10 +1,10 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { countries } from 'country-list-json'; 
+import { countries } from 'country-list-json';
+import { COUNTRY_TO_CURRENCY } from '@/lib/currencyMap';
 
-// In a real production app, you should fetch live rates from an API (e.g., OpenExchangeRates).
-// For this hybrid model, we use estimated parity rates.
+// Exchange rates (In production, fetch this from an API like open.er-api.com)
 const ESTIMATED_RATES: Record<string, number> = {
   USD: 1,
   EUR: 0.92,
@@ -16,14 +16,16 @@ const ESTIMATED_RATES: Record<string, number> = {
   CNY: 7.20,
   AED: 3.67,
   BRL: 4.95,
-  // Add fallback for others or fetch dynamically
+  SGD: 1.34,
+  // If a currency isn't here, we default to 1 (USD parity)
 };
 
 interface LocalizationState {
-  countryCode: string; // ISO 2-letter (e.g., 'IN', 'US')
-  currencyCode: string; // ISO 3-letter (e.g., 'INR', 'USD')
+  countryCode: string;
+  currencyCode: string;
   exchangeRate: number;
   flag: string;
+  currencySymbol: string; // Added this for explicit symbol access
   formatPrice: (amountInUSD: number) => string;
   setCountryOverride: (code: string) => void;
 }
@@ -36,38 +38,31 @@ export function LocalizationProvider({ children }: { children: React.ReactNode }
   const [exchangeRate, setExchangeRate] = useState(1);
   const [flag, setFlag] = useState('🇺🇸');
 
-  // 1. Initial Detection (Runs once on mount)
+  // 1. Initial Detection
   useEffect(() => {
     const detectLocation = async () => {
       try {
-        // We use a lightweight public API for detection. 
-        // In production, rely on 'x-vercel-ip-country' header if hosting on Vercel.
         const res = await fetch('https://ipapi.co/json/');
         const data = await res.json();
-
-        if (data.country_code && data.currency) {
-          updateContext(data.country_code, data.currency);
+        if (data.country_code) {
+          updateContext(data.country_code);
         }
       } catch (error) {
-        console.warn('Auto-detection failed, falling back to US defaults.');
+        console.warn('Auto-detection failed, defaulting to US.');
       }
     };
-
     detectLocation();
   }, []);
 
-  // 2. Helper to update state based on Country Code
-  const updateContext = (cCode: string, currCode?: string) => {
-    // Find country data from the library
-    const countryData = (countries as any[]).find((c: any) => c.code === cCode);
+  // 2. Logic to Update State
+  const updateContext = (cCode: string) => {
+    // A. Determine Currency (Use our map, fallback to USD)
+    const targetCurrency = COUNTRY_TO_CURRENCY[cCode] || 'USD';
     
-    // Determine Currency
-    const targetCurrency = currCode || (countryData ? countryData.currency : 'USD'); 
-    
-    // Determine Rate
+    // B. Determine Rate
     const rate = ESTIMATED_RATES[targetCurrency] || 1; 
 
-    // Determine Flag (Emoji Logic)
+    // C. Determine Flag
     const flagEmoji = cCode.toUpperCase().replace(/./g, char => 
       String.fromCodePoint(char.charCodeAt(0) + 127397)
     );
@@ -78,29 +73,36 @@ export function LocalizationProvider({ children }: { children: React.ReactNode }
     setFlag(flagEmoji);
   };
 
-  // 3. Allow manual override (e.g., from Dropdown)
   const setCountryOverride = (code: string) => {
-    // We assume we can look up the currency from the code
     updateContext(code); 
   };
 
-  // 4. Performance Optimized Formatter
+  // 3. Robust Formatter
   const formatPrice = useCallback((amountInUSD: number) => {
     if (isNaN(amountInUSD)) return '';
     
     const convertedAmount = amountInUSD * exchangeRate;
 
     try {
-      return new Intl.NumberFormat(countryCode === 'US' ? 'en-US' : countryCode, {
+      // This uses the browser's native formatter to get symbols like ₹, $, € correctly
+      return new Intl.NumberFormat(countryCode === 'US' ? 'en-US' : 'en-IN', { // 'en-IN' ensures ₹ shows nicely
         style: 'currency',
         currency: currencyCode,
         maximumFractionDigits: convertedAmount > 1000 ? 0 : 2,
       }).format(convertedAmount);
     } catch (e) {
-      // Fallback if Intl fails
       return `${currencyCode} ${convertedAmount.toFixed(2)}`;
     }
   }, [countryCode, currencyCode, exchangeRate]);
+
+  // 4. Get just the symbol (e.g., "$")
+  const getSymbol = () => {
+    try {
+       return (0).toLocaleString('en-US', { style: 'currency', currency: currencyCode }).replace(/\d/g, '').trim().replace('.', '');
+    } catch {
+       return '$';
+    }
+  };
 
   return (
     <LocalizationContext.Provider 
@@ -109,6 +111,7 @@ export function LocalizationProvider({ children }: { children: React.ReactNode }
         currencyCode, 
         exchangeRate, 
         flag, 
+        currencySymbol: getSymbol(),
         formatPrice,
         setCountryOverride 
       }}
@@ -120,8 +123,6 @@ export function LocalizationProvider({ children }: { children: React.ReactNode }
 
 export const useLocalization = () => {
   const context = useContext(LocalizationContext);
-  if (!context) {
-    throw new Error('useLocalization must be used within a LocalizationProvider');
-  }
+  if (!context) throw new Error('useLocalization error');
   return context;
 };
