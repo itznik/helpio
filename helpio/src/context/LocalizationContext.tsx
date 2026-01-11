@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import countryList from 'country-list-json';
+import { countries } from 'country-list-json'; // FIXED IMPORT
 
 // In a real production app, you should fetch live rates from an API (e.g., OpenExchangeRates).
 // For this hybrid model, we use estimated parity rates.
@@ -59,13 +59,13 @@ export function LocalizationProvider({ children }: { children: React.ReactNode }
   // 2. Helper to update state based on Country Code
   const updateContext = (cCode: string, currCode?: string) => {
     // Find country data from the library
-    const countryData = (countryList as any[]).find((c: any) => c.code === cCode);
+    const countryData = (countries as any[]).find((c: any) => c.code === cCode);
     
     // Determine Currency
-    const targetCurrency = currCode || (countryData ? countryData.currency : 'USD'); // Fallback logic needed if library differs
+    const targetCurrency = currCode || (countryData ? countryData.currency : 'USD'); 
     
     // Determine Rate
-    const rate = ESTIMATED_RATES[targetCurrency] || 1; // Default to 1 if unknown currency
+    const rate = ESTIMATED_RATES[targetCurrency] || 1; 
 
     // Determine Flag (Emoji Logic)
     const flagEmoji = cCode.toUpperCase().replace(/./g, char => 
@@ -81,13 +81,6 @@ export function LocalizationProvider({ children }: { children: React.ReactNode }
   // 3. Allow manual override (e.g., from Dropdown)
   const setCountryOverride = (code: string) => {
     // We assume we can look up the currency from the code
-    // For this example, we re-find it in the list
-    const countryData = (countryList as any[]).find((c: any) => c.code === code);
-    // Note: country-list-json might not have currency for all, robust apps need a mapping
-    // If usage requires robust mapping, we use a custom map. 
-    // For now, we update the country code. 
-    // To properly update currency, we'd need a Code -> Currency map.
-    // Let's assume US default if mapping fails for manual switch, or keep previous.
     updateContext(code); 
   };
 
